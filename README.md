@@ -1,6 +1,6 @@
-# Creatorium — сайт
+# Креаториум — сайт
 
-Сайт creatorium.ru: Nuxt 4, TypeScript, Tailwind CSS 4. Что на нём будет — вопрос 7 в [creatorium-docs](https://github.com/MakcBerluskone/creatorium-docs). Кабинеты живут в `creatorium-admin`, API — в `creatorium-api`.
+Сайт creatorium.ru: Nuxt 4, TypeScript, Tailwind CSS 4. Название — в `app/app.config.ts`. Что на нём будет — вопрос 7 в [creatorium-docs](https://github.com/MakcBerluskone/creatorium-docs). Кабинеты живут в `creatorium-admin`, API — в `creatorium-api`.
 
 ## Запуск
 
