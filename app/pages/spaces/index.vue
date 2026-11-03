@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const api = useSiteApi()
-const { data: catalog } = await useCatalog()
+const { data: catalog, error: catalogError, refresh: refreshCatalog } = await useCatalog()
 
 const { filters, page, hasFilters, setFilter, pageQuery, reset } = useListFilters(['city', 'type', 'search'] as const)
 const search = useDebouncedSearch(() => filters.value.search, value => setFilter('search', value, { replace: true }))
@@ -19,6 +19,14 @@ const { data, status, error, refresh } = useAsyncData(
   () => api.spaces(params.value),
   { server: false, lazy: true }
 )
+
+// Справочник мог не загрузиться вместе со списком: «Повторить» перезапрашивает и его.
+function retry(): void {
+  if (catalogError.value) {
+    refreshCatalog()
+  }
+  refresh()
+}
 
 const loading = computed(() => status.value === 'idle' || status.value === 'pending')
 const cityOptions = computed(() => catalog.value.cities.map(c => ({ value: c.slug, label: c.name })))
@@ -112,7 +120,7 @@ usePageSeo({
       <ListError
         v-if="error"
         :message="apiErrorMessage(error)"
-        @retry="refresh()"
+        @retry="retry()"
       />
 
       <div

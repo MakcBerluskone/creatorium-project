@@ -128,7 +128,7 @@ function scrollStrip(direction: number) {
         </button>
         <div
           ref="strip"
-          class="scrollbar-none -mx-1 flex min-w-0 flex-1 snap-x gap-2 overflow-x-auto px-1 py-1"
+          class="scrollbar-none relative -mx-1 flex min-w-0 flex-1 snap-x gap-2 overflow-x-auto px-1 py-1"
         >
           <label
             v-for="value in dates"

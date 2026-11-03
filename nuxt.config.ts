@@ -43,6 +43,12 @@ export default defineNuxtConfig({
     }
   },
 
+  // Иначе Nitro оставляет @lucide/vue внешним CommonJS-пакетом, и на сборке
+  // страницы с иконками падают с 500: useLucideProps() отдаёт undefined.
+  build: {
+    transpile: ['@lucide/vue']
+  },
+
   // 3000 занят лендингом bk-alliance.
   devServer: {
     port: 3001
