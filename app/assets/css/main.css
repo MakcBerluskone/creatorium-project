@@ -1,1 +1,153 @@
 @import "tailwindcss";
+
+/*
+ * Токены сайта. Палитры скопированы из кабинетов (admin/packages/ui/theme.css),
+ * стандартная палитра Tailwind сброшена: в разметке есть только наши цвета.
+ * Сайт светлый, главное на нём — фото пространств. Фиолетовый — на кнопках,
+ * ссылках и выделениях, большими фонами его не кладём.
+ */
+
+@theme static {
+  --color-*: initial;
+
+  --color-white: oklch(1 0 0);
+  --color-black: oklch(0 0 0);
+
+  --color-primary-50: oklch(0.969 0.016 293.8);
+  --color-primary-100: oklch(0.943 0.029 294.6);
+  --color-primary-200: oklch(0.894 0.057 293.3);
+  --color-primary-300: oklch(0.811 0.111 293.6);
+  --color-primary-400: oklch(0.702 0.183 293.5);
+  --color-primary-500: oklch(0.606 0.25 292.7);
+  --color-primary-600: oklch(0.541 0.281 293);
+  --color-primary-700: oklch(0.491 0.27 292.6);
+  --color-primary-800: oklch(0.432 0.232 292.8);
+  --color-primary-900: oklch(0.38 0.189 293.7);
+  --color-primary-950: oklch(0.283 0.141 291.1);
+
+  --color-surface-0: oklch(1 0 0);
+  --color-surface-50: oklch(0.984 0.003 247.9);
+  --color-surface-100: oklch(0.968 0.007 247.9);
+  --color-surface-200: oklch(0.929 0.013 255.5);
+  --color-surface-300: oklch(0.869 0.022 252.9);
+  --color-surface-400: oklch(0.704 0.04 256.8);
+  --color-surface-500: oklch(0.554 0.046 257.4);
+  --color-surface-600: oklch(0.446 0.043 257.3);
+  --color-surface-700: oklch(0.372 0.044 257.3);
+  --color-surface-800: oklch(0.279 0.041 260);
+  --color-surface-900: oklch(0.208 0.042 265.8);
+  --color-surface-950: oklch(0.129 0.042 264.7);
+
+  --color-red-50: oklch(0.971 0.013 17.4);
+  --color-red-600: oklch(0.577 0.245 27.3);
+  --color-red-700: oklch(0.505 0.213 27.5);
+
+  --color-green-50: oklch(0.982 0.018 155.8);
+  --color-green-600: oklch(0.627 0.194 149.2);
+  --color-green-700: oklch(0.527 0.154 150.1);
+
+  --color-amber-50: oklch(0.987 0.022 95.3);
+  --color-amber-800: oklch(0.473 0.137 46.2);
+}
+
+/* Семантика — те же имена, что в кабинетах. В разметке — они, а не палитры. */
+@theme static {
+  --color-app: var(--color-surface-0);
+  --color-panel: var(--color-surface-0);
+  --color-muted: var(--color-surface-50);
+  --color-hover: var(--color-surface-100);
+  --color-line: var(--color-surface-200);
+  --color-line-strong: var(--color-surface-300);
+
+  --color-fg: var(--color-surface-900);
+  --color-fg-muted: var(--color-surface-500);
+  --color-fg-subtle: var(--color-surface-400);
+
+  --color-primary: var(--color-primary-600);
+  --color-primary-hover: var(--color-primary-700);
+  --color-primary-active: var(--color-primary-800);
+  --color-primary-contrast: var(--color-white);
+  --color-primary-soft: var(--color-primary-50);
+  --color-primary-soft-fg: var(--color-primary-700);
+  --color-primary-text: var(--color-primary-700);
+
+  --color-danger-soft: var(--color-red-50);
+  --color-danger-soft-fg: var(--color-red-700);
+  --color-danger-text: var(--color-red-600);
+
+  --color-success-soft: var(--color-green-50);
+  --color-success-soft-fg: var(--color-green-700);
+  --color-success-text: var(--color-green-600);
+
+  --color-warn-soft: var(--color-amber-50);
+  --color-warn-soft-fg: var(--color-amber-800);
+
+  --color-ring: var(--color-primary-500);
+  --color-backdrop: oklch(0.129 0.042 264.7 / 0.92);
+
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  /* Заголовки и знак. Unbounded широкий — только для крупных строк. */
+  --font-display: "Unbounded Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-control: 0.5rem;
+  --radius-card: 0.75rem;
+
+  --shadow-card: 0 1px 2px 0 oklch(0.208 0.042 265.8 / 0.06), 0 4px 16px -6px oklch(0.208 0.042 265.8 / 0.1);
+  --shadow-overlay: 0 10px 28px -6px oklch(0.208 0.042 265.8 / 0.18), 0 2px 6px -2px oklch(0.208 0.042 265.8 / 0.1);
+
+  --container-page: 76rem;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--color-app);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--color-primary-100);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  /* Нативный select без стрелки браузера: стрелку рисует компонент. */
+  select {
+    appearance: none;
+  }
+}
+
+@utility container-page {
+  width: 100%;
+  max-width: var(--container-page);
+  margin-inline: auto;
+  padding-inline: 1rem;
+
+  @media (width >= 40rem) {
+    padding-inline: 1.5rem;
+  }
+
+  @media (width >= 64rem) {
+    padding-inline: 2rem;
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

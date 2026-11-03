@@ -1,28 +1,77 @@
 # Креаториум — сайт
 
-Сайт creatorium.ru: Nuxt 4, TypeScript, Tailwind CSS 4. Название — в `app/app.config.ts`. Что на нём будет — вопрос 7 в [creatorium-docs](https://github.com/MakcBerluskone/creatorium-docs). Кабинеты живут в `creatorium-admin`, API — в `creatorium-api`.
+Сайт creatorium.ru: Nuxt 4, TypeScript, Tailwind CSS 4. Название — в `app/app.config.ts`. Что на сайте и почему так — разделы «Сайт» и «Айдентика» в [решениях](https://github.com/MakcBerluskone/creatorium-docs/blob/master/architecture/decisions.md). Кабинеты живут в `creatorium-admin`, API — в `creatorium-api`.
+
+Входа на сайте нет: регистрация, вход и бронь — в кабинетах. Сайт показывает каталог пространств и специалистов, свободное время помещений и ведёт в кабинеты.
 
 ## Запуск
 
-Нужны Node.js 22.12+ и pnpm 12.
+Нужны Node.js 22.12+, pnpm 12 и запущенный API (локально — http://localhost:8010).
 
 ```bash
 pnpm install
-```
-
-```bash
+cp .env.example .env   # если нужны адреса не по умолчанию
 pnpm dev
 ```
 
-Сайт откроется на http://localhost:3001: порт 3000 занят лендингом bk-alliance.
+Сайт откроется на http://localhost:3001: порт 3000 занят лендингом bk-alliance. CORS API пускает именно этот адрес.
 
 | Команда | Что делает |
 |---|---|
 | `pnpm dev` | dev-сервер |
-| `pnpm build` | прод-сборка в `.output` |
-| `pnpm preview` | посмотреть прод-сборку |
+| `pnpm generate` | статическая сборка в `.output/public` — то, что идёт на хостинг |
+| `pnpm build` | сборка с Node-сервером; на хостинге Node.js нет, для прода не нужна |
+| `pnpm preview` | посмотреть сборку |
 | `pnpm typecheck` | `vue-tsc` через `nuxt typecheck` |
 | `pnpm lint` | ESLint |
+| `pnpm api:types` | пересобрать `shared/types/api.ts` из `../api/openapi/site.json` |
+
+## Переменные окружения
+
+Все публичные: попадают в браузер. Для `pnpm generate` их задают на сборке — значения вшиваются в статику, на хостинге поменять их без пересборки нельзя. Пример — `.env.example`.
+
+| Переменная | По умолчанию | Зачем |
+|---|---|---|
+| `NUXT_PUBLIC_API_BASE` | `http://localhost:8010` | API без `/api/site`. Из него сайт берёт данные и в браузере, и на сборке |
+| `NUXT_PUBLIC_SITE_URL` | `http://localhost:3001` | адрес сайта: канонические ссылки, `og:url`, `sitemap.xml`, `robots.txt` |
+| `NUXT_PUBLIC_SPACE_CABINET_URL` | `https://space.creatorium.loc:5177` | кабинет пространства: «Зарегистрировать пространство» → `/register` |
+| `NUXT_PUBLIC_SPECIALIST_CABINET_URL` | `https://app.creatorium.loc:5178` | кабинет специалиста: «Забронировать» → `/bookings/new/{id}`, «Создать карточку» → `/register` |
+
+## Откуда данные
+
+API — `GET /api/site/*` без авторизации, контракт — `api/openapi/site.json`. Обёртка — `app/composables/useSiteApi.ts`, типы — `shared/types/`.
+
+| Что | Когда грузится |
+|---|---|
+| главная: виды, первые пространства и специалисты | на сборке |
+| страница пространства и специалиста | на сборке; страницы, которых не было на сборке, — в браузере |
+| поиск пространств и специалистов | в браузере: фильтры живут в адресе (`/spaces?city=moscow&type=photo_studio&search=…&page=2`) |
+| свободное время помещения | всегда в браузере, по выбранным помещению и дню |
+
+Время броней и часов работы приходит строками в поясе пространства и показывается как есть. «Сегодня» в выборе дня — сегодня по часам пространства, дни — до горизонта брони пространства.
+
+## Статическая сборка
+
+`pnpm generate` собирает в `.output/public`:
+
+- `/`, `/spaces`, `/specialists`, `/for-spaces`, `/for-specialists`;
+- `/spaces/{id}` и `/specialists/{id}` — по списку из `GET /api/site/sitemap` на момент сборки (хук `prerender:routes` в `nuxt.config.ts`);
+- `sitemap.xml` и `robots.txt` со строкой `Sitemap:` — из `server/routes/`, адреса берутся из `NUXT_PUBLIC_SITE_URL`;
+- `200.html` — пустая SPA-оболочка, `404.html` — страница «такой страницы нет».
+
+Сборке нужен работающий API. Если он не отвечает, сборка падает сразу, а не выкладывает сайт без страниц. Пространство, одобренное после сборки, попадает в `sitemap.xml` и в поисковики после следующей пересборки — CI пересобирает сайт по расписанию.
+
+### Как открываются страницы, которых не было на сборке
+
+На хостинге Apache, правила — в `public/.htaccess`, при сборке он копируется в корень:
+
+1. Файл или каталог с `index.html` есть — отдаётся как есть: `/spaces` → `spaces/index.html`, без редиректа на слеш.
+2. Нет файла для `/spaces/{id}` или `/specialists/{id}` — отдаётся `200.html`. Nuxt запускается в браузере, страница сама берёт данные из API. Нет такого пространства — показывает «Пространство не найдено».
+3. Всё остальное — 404 со страницей `404.html`.
+
+Собранная страница показывает данные на момент сборки, свободное время на ней всегда живое.
+
+Проверить сборку локально — `pnpm preview` (Nitro отдаёт `.output/public`, правил `.htaccess` у него нет) или любым статическим сервером с теми же правилами.
 
 ## OSPanel
 

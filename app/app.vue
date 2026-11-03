@@ -2,13 +2,7 @@
 const { brand } = useAppConfig()
 
 useHead({
-  title: brand,
-  link: [
-    { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' }
-  ],
-  htmlAttrs: {
-    lang: 'ru'
-  }
+  titleTemplate: title => (title && title !== brand ? `${title} · ${brand}` : brand)
 })
 
 useSeoMeta({
@@ -18,9 +12,11 @@ useSeoMeta({
 </script>
 
 <template>
-  <main class="flex min-h-dvh items-center justify-center bg-slate-50 text-slate-900">
-    <h1 class="text-3xl font-semibold">
-      {{ brand }}
-    </h1>
-  </main>
+  <NuxtLoadingIndicator
+    color="var(--color-primary)"
+    :height="2"
+  />
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
