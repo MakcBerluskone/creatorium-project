@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { brand } = useAppConfig()
+const { indexable } = useRuntimeConfig().public
 
 useHead({
   titleTemplate: title => (title && title !== brand ? `${title} · ${brand}` : brand)
@@ -7,7 +8,8 @@ useHead({
 
 useSeoMeta({
   ogSiteName: brand,
-  ogLocale: 'ru_RU'
+  ogLocale: 'ru_RU',
+  robots: indexable ? undefined : 'noindex, nofollow'
 })
 </script>
 

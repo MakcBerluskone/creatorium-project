@@ -39,7 +39,9 @@ export default defineNuxtConfig({
       apiBase: 'http://localhost:8010',
       siteUrl: 'http://localhost:3001',
       spaceCabinetUrl: 'https://space.creatorium.loc:5177',
-      specialistCabinetUrl: 'https://app.creatorium.loc:5178'
+      specialistCabinetUrl: 'https://app.creatorium.loc:5178',
+      // Стенд собирается с NUXT_PUBLIC_INDEXABLE=false: robots.txt закрывает сайт, страницы — noindex.
+      indexable: true
     }
   },
 

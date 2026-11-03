@@ -1,0 +1,95 @@
+name: ci
+
+# Проверки — на каждый пуш. Выкладка — после них: dev на стенд, master в прод.
+# Раз в сутки прод пересобирается по расписанию: в статику попадают новые
+# и пропадают скрытые пространства и специалисты. Расписание GitHub запускает
+# только ветку по умолчанию — master.
+# Окружения staging и production заводятся в настройках репозитория, см. docs/deploy.md.
+on:
+  push:
+  schedule:
+    # 03:00 по Москве.
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Install node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+  deploy:
+    needs: check
+    # Выкладка включается переменной репозитория DEPLOY_ENABLED=true, когда хостинг готов.
+    if: vars.DEPLOY_ENABLED == 'true' && (github.ref_name == 'dev' || github.ref_name == 'master')
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'master' && 'production' || 'staging' }}
+    concurrency:
+      group: deploy-${{ github.ref_name }}
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Install node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Страницы собираются из API окружения: оно должно быть уже выложено и отвечать.
+      - name: Generate
+        run: pnpm run generate
+        env:
+          NUXT_PUBLIC_API_BASE: https://api.${{ vars.DOMAIN }}
+          NUXT_PUBLIC_SITE_URL: https://${{ vars.DOMAIN }}
+          NUXT_PUBLIC_SPACE_CABINET_URL: https://space.${{ vars.DOMAIN }}
+          NUXT_PUBLIC_SPECIALIST_CABINET_URL: https://app.${{ vars.DOMAIN }}
+          NUXT_PUBLIC_INDEXABLE: ${{ github.ref_name == 'master' }}
+
+      - name: SSH key
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ vars.SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy
+          chmod 600 ~/.ssh/deploy
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      # Сначала _nuxt, потом страницы: новая страница не сошлётся на ещё не залитый чанк.
+      # Старые чанки не удаляются — ими ещё пользуются открытые вкладки. Страницы
+      # удаляются: скрытое пространство должно пропасть и из статики.
+      - name: Upload
+        env:
+          TARGET: ${{ vars.SSH_USER }}@${{ vars.SSH_HOST }}:${{ vars.DEPLOY_PATH }}
+        run: |
+          rsync -az -e 'ssh -i ~/.ssh/deploy' .output/public/_nuxt/ "$TARGET/_nuxt/"
+          rsync -az --delete --filter='P /_nuxt/**' -e 'ssh -i ~/.ssh/deploy' .output/public/ "$TARGET/"
