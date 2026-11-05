@@ -30,6 +30,7 @@ if (error.value) {
 }
 
 const specializations = computed(() => specialist.value?.specializations.map(s => s.name).join(', ') ?? '')
+const performances = useUpcomingEvents(() => specialist.value?.upcoming_performances)
 
 const links = computed(() => (specialist.value?.links ?? [])
   .map(safeExternalUrl)
@@ -150,6 +151,30 @@ const contactClass = 'flex items-center gap-3 rounded-control px-3 py-2.5 text-f
           >
             Специалист пока ничего о себе не написал.
           </p>
+        </section>
+
+        <section
+          v-if="performances.length"
+          aria-labelledby="performances-title"
+          class="flex flex-col gap-4"
+        >
+          <h2
+            id="performances-title"
+            class="font-display text-xl font-semibold"
+          >
+            Ближайшие выступления
+          </h2>
+          <ul class="grid gap-3 xl:grid-cols-2">
+            <li
+              v-for="item in performances"
+              :key="item.id"
+            >
+              <EventRow
+                :event="item"
+                class="h-full"
+              />
+            </li>
+          </ul>
         </section>
       </div>
 

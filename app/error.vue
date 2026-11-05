@@ -7,18 +7,22 @@ const props = defineProps<{
 
 const notFound = computed(() => props.error.statusCode === 404)
 
-// Страница пространства или специалиста передаёт своё объяснение в data.
+// Страница пространства, специалиста или события передаёт своё объяснение в data,
+// а вторая кнопка ведёт туда, куда советует текст.
 const details = computed(() => {
-  const data = props.error.data as { title?: string, text?: string } | undefined
+  const data = props.error.data as { title?: string, text?: string, link?: { label: string, to: string } } | undefined
+  const link = { label: 'Найти пространство', to: '/spaces' }
   if (notFound.value) {
     return {
       title: data?.title ?? 'Такой страницы нет',
-      text: data?.text ?? 'Возможно, в ссылке опечатка или страницу убрали. Начните с главной или поиска.'
+      text: data?.text ?? 'Возможно, в ссылке опечатка или страницу убрали. Начните с главной или поиска.',
+      link: data?.link ?? link
     }
   }
   return {
     title: 'Страница не открылась',
-    text: 'Сервер не ответил или ответил с ошибкой. Попробуйте обновить страницу через минуту.'
+    text: 'Сервер не ответил или ответил с ошибкой. Попробуйте обновить страницу через минуту.',
+    link
   }
 })
 
@@ -50,9 +54,9 @@ useSeoMeta({
         </UiButton>
         <UiButton
           variant="secondary"
-          @click="clearError({ redirect: '/spaces' })"
+          @click="clearError({ redirect: details.link.to })"
         >
-          Найти пространство
+          {{ details.link.label }}
         </UiButton>
       </div>
     </section>

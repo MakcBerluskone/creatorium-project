@@ -31,6 +31,9 @@ if (error.value) {
   }
 }
 
+// Пояс пространства известен — прошедшие события убираем точно по его часам.
+const events = useUpcomingEvents(() => space.value?.upcoming_events, () => space.value?.timezone)
+
 const address = computed(() => (space.value ? formatAddress(space.value) : ''))
 const cover = computed(() => space.value?.photos[0] ?? space.value?.rooms.find(r => r.photos[0])?.photos[0])
 const hasHours = computed(() => (space.value?.hours.length ?? 0) > 0)
@@ -194,6 +197,39 @@ usePageSeo({
             >
               Пространство не указало часы работы — уточните их при брони.
             </p>
+          </section>
+
+          <section
+            v-if="events.length"
+            aria-labelledby="events-title"
+            class="flex flex-col gap-4"
+          >
+            <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              <h2
+                id="events-title"
+                class="font-display text-xl font-semibold"
+              >
+                События здесь
+              </h2>
+              <NuxtLink
+                :to="{ path: '/events', query: { city: space.city.slug } }"
+                class="text-sm font-medium text-primary-text hover:underline"
+              >
+                Афиша города
+              </NuxtLink>
+            </div>
+            <ul class="grid gap-3 xl:grid-cols-2">
+              <li
+                v-for="item in events"
+                :key="item.id"
+              >
+                <EventRow
+                  :event="item"
+                  hide-place
+                  class="h-full"
+                />
+              </li>
+            </ul>
           </section>
         </div>
 

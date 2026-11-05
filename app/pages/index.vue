@@ -4,14 +4,15 @@ import { ArrowRight } from '@lucide/vue'
 const api = useSiteApi()
 const links = useSiteLinks()
 
-// Главная собирается целиком на сборке: поисковикам видны виды, пространства и специалисты.
-const [catalogResult, spacesResult, specialistsResult] = await Promise.all([
+// Главная собирается целиком на сборке: поисковикам видны виды, пространства, события и специалисты.
+const [catalogResult, spacesResult, eventsResult, specialistsResult] = await Promise.all([
   useCatalog(),
   useAsyncData('home:spaces', () => api.spaces({ per_page: 8 })),
+  useAsyncData('home:events', () => api.events({ per_page: 4 })),
   useAsyncData('home:specialists', () => api.specialists({ per_page: 4 }))
 ])
 
-if (import.meta.server && (catalogResult.error.value || spacesResult.error.value || specialistsResult.error.value)) {
+if (import.meta.server && (catalogResult.error.value || spacesResult.error.value || eventsResult.error.value || specialistsResult.error.value)) {
   throw createError({ statusCode: 502, statusMessage: 'Site API error', fatal: true })
 }
 
@@ -19,6 +20,8 @@ const catalog = catalogResult.data
 const spaces = computed(() => spacesResult.data.value?.data ?? [])
 const spacesTotal = computed(() => spacesResult.data.value?.meta.total ?? 0)
 const specialists = computed(() => specialistsResult.data.value?.data ?? [])
+// Полоса собрана на день сборки: прошедшие события браузер уберёт сам.
+const events = useUpcomingEvents(() => eventsResult.data.value?.data)
 const heroPhotos = computed(() => spaces.value.filter(s => s.cover).slice(0, 3))
 
 // Сетка 2×2: одно фото — на всю, два — по столбцу, три — крупное слева и два справа.
@@ -32,7 +35,7 @@ function heroCellClass(index: number): string {
 
 usePageSeo({
   title: 'Репетиционные базы, студии и залы по часам',
-  description: 'Репетиционные базы, студии звукозаписи, фотостудии и залы для событий по часам. Свободное время на странице пространства и онлайн-бронь. Карточки музыкантов, фотографов, ведущих и диджеев.',
+  description: 'Репетиционные базы, студии звукозаписи, фотостудии и залы для событий по часам. Свободное время на странице пространства и онлайн-бронь. Афиша событий, карточки музыкантов, фотографов, ведущих и диджеев.',
   image: () => heroPhotos.value[0]?.cover?.url
 })
 </script>
@@ -129,6 +132,43 @@ usePageSeo({
           class="self-start sm:hidden"
         >
           Все пространства
+          <ArrowRight
+            class="size-4"
+            aria-hidden="true"
+          />
+        </UiButton>
+      </section>
+
+      <section
+        v-if="events.length"
+        aria-labelledby="events-title"
+        class="flex flex-col gap-6"
+      >
+        <HomeSectionHeader
+          id="events-title"
+          title="Ближайшие события"
+          to="/events"
+          link-label="Вся афиша"
+        >
+          Концерты, джемы, мастер-классы и вечеринки в пространствах.
+        </HomeSectionHeader>
+
+        <ul class="scrollbar-none -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 sm:overflow-visible sm:px-0 lg:grid-cols-4">
+          <li
+            v-for="event in events"
+            :key="event.id"
+            class="w-[80%] shrink-0 snap-start sm:w-auto"
+          >
+            <EventCard :event="event" />
+          </li>
+        </ul>
+
+        <UiButton
+          to="/events"
+          variant="secondary"
+          class="self-start sm:hidden"
+        >
+          Вся афиша
           <ArrowRight
             class="size-4"
             aria-hidden="true"

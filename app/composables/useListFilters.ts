@@ -34,10 +34,17 @@ export function useListFilters<Key extends string>(keys: readonly Key[]) {
       value !== undefined && value !== '' && !(key === 'page' && Number(value) <= 1)))
   }
 
+  /** Несколько фильтров за один шаг истории: «с» и «по» у дат меняются вместе. */
+  function setFilters(patch: Partial<Record<Key, string>>, options: { replace?: boolean } = {}) {
+    const values = Object.fromEntries(Object.entries(patch).map(([key, value]) =>
+      [key, (value as string | undefined)?.trim() || undefined])) as Partial<Record<Key, string>>
+    const query = buildQuery({ ...values, page: undefined })
+    return options.replace ? router.replace({ query }) : router.push({ query })
+  }
+
   /** Поиск печатают по букве — такие шаги не копим в истории. */
   function setFilter(key: Key, value: string, options: { replace?: boolean } = {}) {
-    const query = buildQuery({ [key]: value.trim() || undefined, page: undefined } as Partial<Record<Key | 'page', string>>)
-    return options.replace ? router.replace({ query }) : router.push({ query })
+    return setFilters({ [key]: value } as Partial<Record<Key, string>>, options)
   }
 
   function pageQuery(target: number): LocationQueryRaw {
@@ -48,7 +55,7 @@ export function useListFilters<Key extends string>(keys: readonly Key[]) {
     return router.push({ query: {} })
   }
 
-  return { filters, page, hasFilters, setFilter, pageQuery, reset }
+  return { filters, page, hasFilters, setFilter, setFilters, pageQuery, reset }
 }
 
 /** Строка поиска с задержкой: запрос уходит, когда человек перестал печатать. */

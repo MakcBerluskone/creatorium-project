@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { Menu, X } from '@lucide/vue'
 
+// Пять пунктов помещаются в строку только с lg, уже — меню за кнопкой.
 const links = [
   { to: '/spaces', label: 'Пространства' },
   { to: '/specialists', label: 'Специалисты' },
+  { to: '/events', label: 'Афиша' },
   { to: '/for-spaces', label: 'Для пространств' },
   { to: '/for-specialists', label: 'Для специалистов' }
 ]
@@ -32,7 +34,7 @@ function onKeydown(event: KeyboardEvent) {
 
       <nav
         aria-label="Основное меню"
-        class="hidden md:block"
+        class="hidden lg:block"
       >
         <ul class="flex items-center gap-1">
           <li
@@ -52,7 +54,7 @@ function onKeydown(event: KeyboardEvent) {
 
       <button
         type="button"
-        class="-mr-2 flex size-11 items-center justify-center rounded-control text-fg hover:bg-hover md:hidden"
+        class="-mr-2 flex size-11 items-center justify-center rounded-control text-fg hover:bg-hover lg:hidden"
         :aria-expanded="open"
         aria-controls="mobile-menu"
         :aria-label="open ? 'Закрыть меню' : 'Открыть меню'"
@@ -70,7 +72,7 @@ function onKeydown(event: KeyboardEvent) {
       v-show="open"
       id="mobile-menu"
       aria-label="Основное меню"
-      class="border-t border-line bg-panel md:hidden"
+      class="border-t border-line bg-panel lg:hidden"
     >
       <ul class="container-page flex flex-col py-2">
         <li

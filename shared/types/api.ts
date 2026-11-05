@@ -12,10 +12,67 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Города, виды пространств и специализации для поиска. Скрытые админом
+         * Города, виды пространств, специализации и виды событий для поиска. Скрытые админом
          *     не приходят. Счётчики — по тому, что видно на сайте
          */
         get: operations["site.catalog"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Предстоящие события по городу, виду и датам, ближайшие сверху. Даты —
+         *     по московскому дню: точнее для поясов других городов не нужно
+         */
+        get: operations["site.events.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/{event}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Страница события, и прошедшего тоже. Не на афише — 404 */
+        get: operations["site.events.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/organizers/{organizer}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Страница организатора с его предстоящими событиями. Организатор без
+         *     единого события на афише сайту не виден — 404
+         */
+        get: operations["site.organizers.show"];
         put?: never;
         post?: never;
         delete?: never;
@@ -32,7 +89,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Все страницы пространств и специалистов: по ним сборка сайта
+         * Все страницы пространств, специалистов, событий и организаторов: по ним сборка сайта
          *     заранее собирает страницы и sitemap.xml для поисковиков
          */
         get: operations["site.sitemap"];
@@ -163,6 +220,12 @@ export interface components {
                 name: string;
                 specialists_count: number;
             }[];
+            /** @description Виды событий; счётчик — предстоящие на афише */
+            event_types: {
+                slug: string;
+                name: string;
+                events_count: number;
+            }[];
         };
         /** DaySlotsResource */
         DaySlotsResource: {
@@ -180,6 +243,102 @@ export interface components {
                 max_minutes: number;
             }[];
         };
+        /** EventListItemResource */
+        EventListItemResource: {
+            id: number;
+            title: string;
+            type: {
+                slug: string;
+                name: string;
+            };
+            /** @description Начало в поясе пространства, «2026-11-20 19:00» — показывать как есть */
+            starts_at: string;
+            /** @description Конец в поясе пространства; бывает на следующий день */
+            ends_at: string;
+            space: {
+                id: number;
+                name: string;
+                address: string;
+            };
+            city: {
+                slug: string;
+                name: string;
+            };
+            /** @description Организатор; null — событие самого пространства */
+            organizer: {
+                id: number;
+                name: string;
+            } | null;
+            /** @description Вход текстом: «свободный», «500 ₽ на входе» */
+            entry: string | null;
+            /** @description Афиша до 640 px; null — не загружена */
+            poster_thumb_url: string | null;
+        };
+        /** EventResource */
+        EventResource: {
+            id: number;
+            title: string;
+            type: {
+                slug: string;
+                name: string;
+            };
+            /** @description Начало в поясе пространства, «2026-11-20 19:00» — показывать как есть */
+            starts_at: string;
+            ends_at: string;
+            /** @description Прошло ли событие: страница остаётся, но без «Купить билет» */
+            is_past: boolean;
+            space: {
+                id: number;
+                name: string;
+                address: string;
+            };
+            room: string;
+            city: {
+                slug: string;
+                name: string;
+            };
+            /** @description Организатор; null — событие самого пространства */
+            organizer: {
+                id: number;
+                name: string;
+                logo_thumb_url: string | null;
+            } | null;
+            description: string | null;
+            entry: string | null;
+            ticket_url: string | null;
+            poster_url: string | null;
+            poster_thumb_url: string | null;
+            /** @description Состав по порядку. specialist.id — ссылка на карточку, если она открыта на сайте */
+            participants: {
+                specialist: {
+                    id: number | null;
+                    name: string;
+                    specializations: string[];
+                } | null;
+                collective: string | null;
+                name: string | null;
+            }[];
+            /** Format: date-time */
+            updated_at: string | null;
+        };
+        /** OrganizerResource */
+        OrganizerResource: {
+            id: number;
+            name: string;
+            city: {
+                slug: string;
+                name: string;
+            } | null;
+            about: string | null;
+            /** @description Логотип 512×512; null — не загружен */
+            logo_url: string | null;
+            logo_thumb_url: string | null;
+            /** @description Ник или канал в Telegram без @ */
+            telegram: string | null;
+            links: string[];
+            /** @description Предстоящие события на афише, ближайшие сверху */
+            events: components["schemas"]["EventListItemResource"][];
+        };
         /** PhotoResource */
         PhotoResource: {
             /** @description До 1600 px по длинной стороне, WebP */
@@ -196,6 +355,14 @@ export interface components {
                 updated_at: string;
             }[];
             specialists: {
+                id: number;
+                updated_at: string;
+            }[];
+            events: {
+                id: number;
+                updated_at: string;
+            }[];
+            organizers: {
                 id: number;
                 updated_at: string;
             }[];
@@ -261,6 +428,8 @@ export interface components {
             }[];
             /** @description Часы работы по дням недели; дня нет — закрыто */
             hours: components["schemas"]["SpaceHourResource"][];
+            /** @description Ближайшие события здесь на афише, до 10 */
+            upcoming_events: components["schemas"]["EventListItemResource"][];
             /** Format: date-time */
             updated_at: string | null;
         };
@@ -306,6 +475,8 @@ export interface components {
             phone: string | null;
             /** @description Только если специалист показал его */
             email: string | null;
+            /** @description Ближайшие выступления на афише, до 10 */
+            upcoming_performances: components["schemas"]["EventListItemResource"][];
             /** Format: date-time */
             updated_at: string | null;
         };
@@ -352,6 +523,89 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["CatalogResource"];
+                    };
+                };
+            };
+        };
+    };
+    "site.events.index": {
+        parameters: {
+            query?: {
+                /** @description Код города из /api/site/catalog: moscow */
+                city?: string | null;
+                /** @description Код вида события: concert */
+                type?: string | null;
+                /** @description С какого дня, 2026-11-20; по умолчанию — с сегодняшнего */
+                from?: string | null;
+                /** @description По какой день включительно */
+                to?: string | null;
+                page?: number;
+                /** @description По умолчанию 24 */
+                per_page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `EventListItemResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["EventListItemResource"][];
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "site.events.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `EventResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["EventResource"];
+                    };
+                };
+            };
+        };
+    };
+    "site.organizers.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                organizer: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `OrganizerResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["OrganizerResource"];
                     };
                 };
             };

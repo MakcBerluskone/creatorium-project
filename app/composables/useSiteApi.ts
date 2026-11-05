@@ -1,6 +1,10 @@
 import type {
   Catalog,
   DaySlots,
+  EventDetails,
+  EventListItem,
+  EventsQuery,
+  Organizer,
   Paginated,
   Space,
   SpaceListItem,
@@ -50,6 +54,13 @@ export function useSiteApi() {
     specialists: (query: SpecialistsQuery = {}, signal?: AbortSignal) =>
       request<Paginated<SpecialistListItem>>('/specialists', { query: compactQuery(query), signal }),
 
-    specialist: (id: number) => request<Wrapped<Specialist>>(`/specialists/${id}`).then(r => r.data)
+    specialist: (id: number) => request<Wrapped<Specialist>>(`/specialists/${id}`).then(r => r.data),
+
+    events: (query: EventsQuery = {}, signal?: AbortSignal) =>
+      request<Paginated<EventListItem>>('/events', { query: compactQuery(query), signal }),
+
+    event: (id: number) => request<Wrapped<EventDetails>>(`/events/${id}`).then(r => r.data),
+
+    organizer: (id: number) => request<Wrapped<Organizer>>(`/organizers/${id}`).then(r => r.data)
   }
 }

@@ -65,12 +65,12 @@ export default defineNuxtConfig({
     prerender: {
       // Список страниц задаём сами: обход ссылок пошёл бы по фильтрам вида /spaces?type=…
       crawlLinks: false,
-      routes: ['/', '/spaces', '/specialists', '/for-spaces', '/for-specialists', '/sitemap.xml', '/robots.txt'],
+      routes: ['/', '/spaces', '/specialists', '/events', '/for-spaces', '/for-specialists', '/sitemap.xml', '/robots.txt'],
       // У API лимит 600 запросов в минуту с одного адреса.
       concurrency: 4
     },
     hooks: {
-      // Страницы пространств и специалистов — по списку из API на момент сборки.
+      // Страницы пространств, специалистов, событий и организаторов — по списку из API на момент сборки.
       async 'prerender:routes'(routes) {
         const url = `${apiBase}/api/site/sitemap`
         let response: Response
@@ -88,6 +88,12 @@ export default defineNuxtConfig({
         }
         for (const specialist of data.specialists) {
           routes.add(`/specialists/${specialist.id}`)
+        }
+        for (const event of data.events) {
+          routes.add(`/events/${event.id}`)
+        }
+        for (const organizer of data.organizers) {
+          routes.add(`/organizers/${organizer.id}`)
         }
       }
     }

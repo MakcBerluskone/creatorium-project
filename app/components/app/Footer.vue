@@ -16,7 +16,8 @@ const columns: { title: string, items: FooterLink[] }[] = [
     title: 'Каталог',
     items: [
       { label: 'Пространства', to: '/spaces' },
-      { label: 'Специалисты', to: '/specialists' }
+      { label: 'Специалисты', to: '/specialists' },
+      { label: 'Афиша', to: '/events' }
     ]
   },
   {
