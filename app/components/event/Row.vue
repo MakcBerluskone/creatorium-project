@@ -3,7 +3,7 @@ import type { EventListItem } from '#shared/types/site'
 
 const props = withDefaults(defineProps<{
   event: EventListItem
-  /** На странице пространства место и так понятно. */
+  /** На странице площадки место и так понятно. */
   hidePlace?: boolean
 }>(), {
   hidePlace: false

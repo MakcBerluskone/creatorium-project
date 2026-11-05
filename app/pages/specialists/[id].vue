@@ -9,7 +9,7 @@ const route = useRoute()
 const id = Number(route.params.id)
 const api = useSiteApi()
 
-// Как у пространства: данные со сборки, а новые карточки — из браузера через 200.html.
+// Как у площадки: данные со сборки, а новые карточки — из браузера через 200.html.
 const { data: specialist, error, refresh } = await useAsyncData(`specialist:${id}`, () => api.specialist(id))
 
 if (error.value) {

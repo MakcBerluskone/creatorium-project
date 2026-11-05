@@ -43,7 +43,7 @@ function cellClass(index: number): string {
       <!-- Телефон: лента с прокруткой пальцем. -->
       <ul
         class="scrollbar-none -mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 sm:-mx-6 sm:px-6 md:hidden"
-        aria-label="Фото пространства"
+        aria-label="Фото площадки"
       >
         <li
           v-for="(photo, index) in photos"

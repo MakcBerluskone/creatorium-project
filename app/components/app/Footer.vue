@@ -15,7 +15,7 @@ const columns: { title: string, items: FooterLink[] }[] = [
   {
     title: 'Каталог',
     items: [
-      { label: 'Пространства', to: '/spaces' },
+      { label: 'Площадки', to: '/spaces' },
       { label: 'Специалисты', to: '/specialists' },
       { label: 'Афиша', to: '/events' }
     ]
@@ -23,14 +23,14 @@ const columns: { title: string, items: FooterLink[] }[] = [
   {
     title: 'Участникам',
     items: [
-      { label: 'Для пространств', to: '/for-spaces' },
+      { label: 'Для площадок', to: '/for-spaces' },
       { label: 'Для специалистов', to: '/for-specialists' }
     ]
   },
   {
     title: 'Кабинеты',
     items: [
-      { label: 'Кабинет пространства', href: links.spaceCabinet },
+      { label: 'Кабинет площадки', href: links.spaceCabinet },
       { label: 'Кабинет специалиста', href: links.specialistCabinet }
     ]
   }
@@ -43,7 +43,7 @@ const columns: { title: string, items: FooterLink[] }[] = [
       <div class="flex flex-col gap-3">
         <AppLogo />
         <p class="max-w-xs text-sm text-fg-muted">
-          Репетиционные базы, студии и залы по часам. Свободное время и онлайн-бронь.
+          Репетиционные базы, студии и площадки для мероприятий по часам. Свободное время и онлайн-бронь.
         </p>
       </div>
       <nav

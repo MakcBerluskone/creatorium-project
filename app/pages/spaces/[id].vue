@@ -9,7 +9,7 @@ const route = useRoute()
 const id = Number(route.params.id)
 const api = useSiteApi()
 
-// На сборке данные попадают в страницу. Если пространство одобрили после
+// На сборке данные попадают в страницу. Если площадку одобрили после
 // сборки, страница открывается через 200.html и грузит их уже в браузере.
 const { data: space, error, refresh } = await useAsyncData(`space:${id}`, () => api.space(id))
 
@@ -19,8 +19,8 @@ if (error.value) {
       statusCode: 404,
       statusMessage: 'Space not found',
       data: {
-        title: 'Пространство не найдено',
-        text: 'Возможно, его скрыли или ссылка устарела. Посмотрите другие пространства в поиске.'
+        title: 'Площадка не найдена',
+        text: 'Возможно, её скрыли или ссылка устарела. Посмотрите другие площадки в поиске.'
       },
       fatal: true
     })
@@ -31,7 +31,7 @@ if (error.value) {
   }
 }
 
-// Пояс пространства известен — прошедшие события убираем точно по его часам.
+// Пояс площадки известен — прошедшие события убираем точно по её часам.
 const events = useUpcomingEvents(() => space.value?.upcoming_events, () => space.value?.timezone)
 
 const address = computed(() => (space.value ? formatAddress(space.value) : ''))
@@ -46,14 +46,14 @@ const seoDescription = computed(() => {
   const prices = s.rooms.map(r => r.price_per_hour).filter((p): p is number => p !== null)
   const facts = [
     `${s.type.name}, ${formatAddress(s)}`,
-    plural(s.rooms.length, ['помещение', 'помещения', 'помещений']) + (prices.length ? `, от ${formatRubles(Math.min(...prices))}/час` : ''),
+    plural(s.rooms.length, ['зал', 'зала', 'залов']) + (prices.length ? `, от ${formatRubles(Math.min(...prices))}/час` : ''),
     s.description ?? 'Свободное время и онлайн-бронь'
   ]
   return excerpt(facts.join('. '), 200)
 })
 
 usePageSeo({
-  title: () => (space.value ? `${space.value.name} — ${space.value.city.name}` : 'Пространство'),
+  title: () => (space.value ? `${space.value.name} — ${space.value.city.name}` : 'Площадка'),
   description: seoDescription,
   image: () => cover.value?.url,
   type: 'article'
@@ -69,7 +69,7 @@ usePageSeo({
             <NuxtLink
               to="/spaces"
               class="hover:text-primary-text"
-            >Пространства</NuxtLink>
+            >Площадки</NuxtLink>
           </li>
           <li
             class="flex items-center gap-1"
@@ -116,7 +116,7 @@ usePageSeo({
               id="about-title"
               class="font-display text-xl font-semibold"
             >
-              О пространстве
+              О площадке
             </h2>
             <p class="max-w-prose text-[1.0625rem] leading-relaxed whitespace-pre-line text-fg">
               {{ space.description }}
@@ -131,7 +131,7 @@ usePageSeo({
               id="rooms-title"
               class="font-display text-xl font-semibold"
             >
-              Помещения
+              Залы
             </h2>
             <SpaceRoomCard
               v-for="room in space.rooms"
@@ -144,7 +144,7 @@ usePageSeo({
               v-if="space.rooms.length === 0"
               class="text-fg-muted"
             >
-              Пространство ещё не добавило помещения.
+              Площадка ещё не добавила залы.
             </p>
           </section>
 
@@ -195,7 +195,7 @@ usePageSeo({
               v-else
               class="text-fg-muted"
             >
-              Пространство не указало часы работы — уточните их при брони.
+              Площадка не указала часы работы — уточните их при брони.
             </p>
           </section>
 
@@ -255,7 +255,7 @@ usePageSeo({
           v-if="space.requires_confirmation"
           class="text-xs text-fg-muted"
         >
-          Бронь подтверждает пространство
+          Бронь подтверждает площадка
         </p>
       </div>
     </div>

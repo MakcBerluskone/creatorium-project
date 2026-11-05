@@ -4,7 +4,7 @@ import { ArrowRight } from '@lucide/vue'
 const api = useSiteApi()
 const links = useSiteLinks()
 
-// Главная собирается целиком на сборке: поисковикам видны виды, пространства, события и специалисты.
+// Главная собирается целиком на сборке: поисковикам видны виды, площадки, события и специалисты.
 const [catalogResult, spacesResult, eventsResult, specialistsResult] = await Promise.all([
   useCatalog(),
   useAsyncData('home:spaces', () => api.spaces({ per_page: 8 })),
@@ -34,8 +34,8 @@ function heroCellClass(index: number): string {
 }
 
 usePageSeo({
-  title: 'Репетиционные базы, студии и залы по часам',
-  description: 'Репетиционные базы, студии звукозаписи, фотостудии и залы для событий по часам. Свободное время на странице пространства и онлайн-бронь. Афиша событий, карточки музыкантов, фотографов, ведущих и диджеев.',
+  title: 'Репетиционные базы, студии и площадки для мероприятий по часам',
+  description: 'Репетиционные базы, студии звукозаписи, фотостудии и площадки для мероприятий по часам. Свободное время на странице площадки и онлайн-бронь. Афиша событий, карточки музыкантов, фотографов, ведущих и диджеев.',
   image: () => heroPhotos.value[0]?.cover?.url
 })
 </script>
@@ -47,10 +47,10 @@ usePageSeo({
         <div class="flex flex-col gap-6 md:gap-8">
           <div class="flex flex-col gap-4">
             <h1 class="font-display text-[1.75rem] leading-[1.15] font-semibold text-balance sm:text-4xl md:text-5xl">
-              Репетиционные базы, студии и&nbsp;залы по&nbsp;часам
+              Репетиционные базы, студии и&nbsp;площадки для&nbsp;мероприятий по&nbsp;часам
             </h1>
             <p class="max-w-xl text-lg text-fg-muted md:text-xl">
-              Найдите помещение для репетиции, записи, съёмки или события, посмотрите свободное время и забронируйте онлайн.
+              Найдите зал для репетиции, записи, съёмки или события, посмотрите свободное время и забронируйте онлайн.
             </p>
           </div>
           <HomeSearch :catalog="catalog" />
@@ -97,11 +97,11 @@ usePageSeo({
       >
         <HomeSectionHeader
           id="spaces-title"
-          title="Пространства"
+          title="Площадки"
           to="/spaces"
-          :link-label="spacesTotal > spaces.length ? `Все ${spacesTotal}` : 'Все пространства'"
+          :link-label="spacesTotal > spaces.length ? `Все ${spacesTotal}` : 'Все площадки'"
         >
-          Фото, помещения и цены. Свободное время — на странице пространства.
+          Фото, залы и цены. Свободное время — на странице площадки.
         </HomeSectionHeader>
 
         <ul
@@ -123,7 +123,7 @@ usePageSeo({
           v-else
           class="text-fg-muted"
         >
-          Пространства появятся здесь после проверки.
+          Площадки появятся здесь после проверки.
         </p>
 
         <UiButton
@@ -131,7 +131,7 @@ usePageSeo({
           variant="secondary"
           class="self-start sm:hidden"
         >
-          Все пространства
+          Все площадки
           <ArrowRight
             class="size-4"
             aria-hidden="true"
@@ -150,7 +150,7 @@ usePageSeo({
           to="/events"
           link-label="Вся афиша"
         >
-          Концерты, джемы, мастер-классы и вечеринки в пространствах.
+          Концерты, джемы, мастер-классы и вечеринки на площадках.
         </HomeSectionHeader>
 
         <ul class="scrollbar-none -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 sm:overflow-visible sm:px-0 lg:grid-cols-4">
@@ -251,12 +251,12 @@ usePageSeo({
         </h2>
         <div class="grid gap-4 md:grid-cols-2 md:gap-6">
           <HomeCtaCard
-            title="Для пространств"
+            title="Для площадок"
             to="/for-spaces"
             :href="links.spaceRegister"
-            action="Зарегистрировать пространство"
+            action="Зарегистрировать площадку"
           >
-            Расписание помещений, онлайн-брони и брони по телефону в одной сетке, база клиентов. В первой версии бесплатно.
+            Расписание залов, онлайн-брони и брони по телефону в одной сетке, база клиентов. В первой версии бесплатно.
           </HomeCtaCard>
           <HomeCtaCard
             title="Для специалистов"
@@ -264,7 +264,7 @@ usePageSeo({
             :href="links.specialistRegister"
             action="Создать карточку"
           >
-            Свободное время пространств и онлайн-бронь, брони коллектива и публичная карточка на сайте.
+            Свободное время площадок и онлайн-бронь, брони коллектива и публичная карточка на сайте.
           </HomeCtaCard>
         </div>
       </section>

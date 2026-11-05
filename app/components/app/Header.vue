@@ -3,10 +3,10 @@ import { Menu, X } from '@lucide/vue'
 
 // Пять пунктов помещаются в строку только с lg, уже — меню за кнопкой.
 const links = [
-  { to: '/spaces', label: 'Пространства' },
+  { to: '/spaces', label: 'Площадки' },
   { to: '/specialists', label: 'Специалисты' },
   { to: '/events', label: 'Афиша' },
-  { to: '/for-spaces', label: 'Для пространств' },
+  { to: '/for-spaces', label: 'Для площадок' },
   { to: '/for-specialists', label: 'Для специалистов' }
 ]
 

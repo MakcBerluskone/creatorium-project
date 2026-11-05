@@ -25,7 +25,7 @@ const notFound = {
 // Данные пришли из API уже в браузере, а не со сборки: сверять их незачем.
 let loadedInBrowser = false
 
-// Как у пространства: данные со сборки, а новые события — из браузера через 200.html.
+// Как у площадки: данные со сборки, а новые события — из браузера через 200.html.
 const { data: event, error, refresh } = await useAsyncData(`event:${id}`, () => {
   loadedInBrowser = import.meta.client
   return api.event(id)
@@ -263,7 +263,7 @@ const factLabel = 'flex items-center gap-2 text-sm text-fg-muted'
               >{{ event.space.name }}</NuxtLink>
             </dd>
             <dd class="text-fg">
-              Помещение «{{ event.room }}»
+              Зал «{{ event.room }}»
             </dd>
             <dd class="text-fg-muted">
               {{ address }}
@@ -311,7 +311,7 @@ const factLabel = 'flex items-center gap-2 text-sm text-fg-muted'
               v-else
               class="text-fg"
             >
-              Событие пространства
+              Событие площадки
             </dd>
           </div>
         </dl>

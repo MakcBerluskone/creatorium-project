@@ -12,7 +12,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Города, виды пространств, специализации и виды событий для поиска. Скрытые админом
+         * Города, виды площадок, специализации и виды событий для поиска. Скрытые админом
          *     не приходят. Счётчики — по тому, что видно на сайте
          */
         get: operations["site.catalog"];
@@ -89,7 +89,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Все страницы пространств, специалистов, событий и организаторов: по ним сборка сайта
+         * Все страницы площадок, специалистов, событий и организаторов: по ним сборка сайта
          *     заранее собирает страницы и sitemap.xml для поисковиков
          */
         get: operations["site.sitemap"];
@@ -109,7 +109,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Поиск по городу, виду, названию и адресу. Пространства с фото —
+         * Поиск по городу, виду, названию и адресу. Площадки с фото —
          *     первыми, среди них — новые
          */
         get: operations["site.spaces.index"];
@@ -128,7 +128,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Страница пространства. Не проверено или скрыто — 404 */
+        /** Страница площадки. Не проверена или скрыта — 404 */
         get: operations["site.spaces.show"];
         put?: never;
         post?: never;
@@ -146,7 +146,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Свободное время помещения на день — то же, что видит специалист
+         * Свободное время зала на день — то же, что видит специалист
          *     перед бронью
          */
         get: operations["site.spaces.rooms.slots"];
@@ -208,7 +208,7 @@ export interface components {
                 spaces_count: number;
                 specialists_count: number;
             }[];
-            /** @description Виды пространств */
+            /** @description Виды площадок */
             space_types: {
                 slug: string;
                 name: string;
@@ -229,13 +229,13 @@ export interface components {
         };
         /** DaySlotsResource */
         DaySlotsResource: {
-            /** @description День в поясе пространства */
+            /** @description День в поясе площадки */
             date: string;
             /** @description Открытие в этот день, 2026-11-05 18:00; null — выходной */
             opens_at: string | null;
             /** @description Закрытие; бывает на следующий день */
             closes_at: string | null;
-            /** @description Бронь в этом помещении не короче, минут */
+            /** @description Бронь в этом зале не короче, минут */
             min_minutes: number;
             /** @description Свободные начала и самая длинная бронь от каждого */
             slots: {
@@ -251,9 +251,9 @@ export interface components {
                 slug: string;
                 name: string;
             };
-            /** @description Начало в поясе пространства, «2026-11-20 19:00» — показывать как есть */
+            /** @description Начало в поясе площадки, «2026-11-20 19:00» — показывать как есть */
             starts_at: string;
-            /** @description Конец в поясе пространства; бывает на следующий день */
+            /** @description Конец в поясе площадки; бывает на следующий день */
             ends_at: string;
             space: {
                 id: number;
@@ -264,7 +264,7 @@ export interface components {
                 slug: string;
                 name: string;
             };
-            /** @description Организатор; null — событие самого пространства */
+            /** @description Организатор; null — событие самой площадки */
             organizer: {
                 id: number;
                 name: string;
@@ -282,7 +282,7 @@ export interface components {
                 slug: string;
                 name: string;
             };
-            /** @description Начало в поясе пространства, «2026-11-20 19:00» — показывать как есть */
+            /** @description Начало в поясе площадки, «2026-11-20 19:00» — показывать как есть */
             starts_at: string;
             ends_at: string;
             /** @description Прошло ли событие: страница остаётся, но без «Купить билет» */
@@ -297,7 +297,7 @@ export interface components {
                 slug: string;
                 name: string;
             };
-            /** @description Организатор; null — событие самого пространства */
+            /** @description Организатор; null — событие самой площадки */
             organizer: {
                 id: number;
                 name: string;
@@ -390,7 +390,7 @@ export interface components {
             };
             address: string;
             cover: components["schemas"]["PhotoResource"] | null;
-            /** @description Самая низкая цена часа среди помещений, рубли; null — цены не указаны */
+            /** @description Самая низкая цена часа среди залов, рубли; null — цены не указаны */
             price_from: number | null;
             rooms_count: number;
         };
@@ -407,21 +407,21 @@ export interface components {
                 name: string;
             };
             address: string;
-            /** @description Пояс пространства: часы и свободное время — в нём */
+            /** @description Пояс площадки: часы и свободное время — в нём */
             timezone: string;
             description: string | null;
-            /** @description Фото пространства; первое — обложка */
+            /** @description Фото площадки; первое — обложка */
             photos: components["schemas"]["PhotoResource"][];
-            /** @description Онлайн-бронь ждёт подтверждения пространства */
+            /** @description Онлайн-бронь ждёт подтверждения площадки */
             requires_confirmation: boolean;
             /** @description На сколько дней вперёд можно забронировать */
             booking_horizon_days: number;
-            /** @description Помещения по порядку */
+            /** @description Залы по порядку */
             rooms: {
                 id: number;
                 name: string;
                 description: string | null;
-                /** @description Цена часа, рубли; null — уточняют у пространства */
+                /** @description Цена часа, рубли; null — уточняют у площадки */
                 price_per_hour: number | null;
                 min_booking_minutes: number;
                 photos: components["schemas"]["PhotoResource"][];
@@ -638,7 +638,7 @@ export interface operations {
             query?: {
                 /** @description Код города из /api/site/catalog: moscow */
                 city?: string | null;
-                /** @description Код вида пространства: rehearsal_base */
+                /** @description Код вида площадки: rehearsal_base */
                 type?: string | null;
                 /** @description Подстрока названия или адреса */
                 search?: string | null;
@@ -693,7 +693,7 @@ export interface operations {
     "site.spaces.rooms.slots": {
         parameters: {
             query: {
-                /** @description День в поясе пространства, 2026-11-05 */
+                /** @description День в поясе площадки, 2026-11-05 */
                 date: string;
             };
             header?: never;

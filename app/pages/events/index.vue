@@ -26,7 +26,7 @@ const params = computed(() => ({
   per_page: 24
 }))
 
-// Как поиск пространств: список зависит от фильтров в адресе и собирается в браузере.
+// Как поиск площадок: список зависит от фильтров в адресе и собирается в браузере.
 const { data, status, error, refresh } = useAsyncData(
   () => `events:${JSON.stringify(params.value)}`,
   () => api.events(params.value),
@@ -110,7 +110,7 @@ usePageSeo({
     const parts = [typeName.value, cityName.value].filter(Boolean)
     return parts.length ? `Афиша — ${parts.join(', ')}` : 'Афиша: концерты, джемы, мастер-классы и вечеринки'
   },
-  description: 'Концерты, джемы, мастер-классы и вечеринки в репетиционных базах, студиях и залах. Дата и время, место, состав и вход.'
+  description: 'Концерты, джемы, мастер-классы и вечеринки в репетиционных базах, студиях и на площадках для мероприятий. Дата и время, место, состав и вход.'
 })
 
 const chipClass = 'flex h-10 items-center rounded-full border border-line-strong bg-panel px-4 text-sm font-medium whitespace-nowrap text-fg transition-colors peer-checked:border-primary peer-checked:bg-primary-soft peer-checked:text-primary-soft-fg peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring hover:border-fg-subtle'
@@ -123,7 +123,7 @@ const chipClass = 'flex h-10 items-center rounded-full border border-line-strong
         Афиша
       </h1>
       <p class="max-w-2xl text-fg-muted md:text-lg">
-        Концерты, джемы, мастер-классы и вечеринки в пространствах Креаториума. На странице события — состав, место и вход.
+        Концерты, джемы, мастер-классы и вечеринки на площадках Креаториума. На странице события — состав, место и вход.
       </p>
     </header>
 
@@ -235,7 +235,7 @@ const chipClass = 'flex h-10 items-center rounded-full border border-line-strong
           Попробуйте другие даты, город или вид события.
         </template>
         <template v-else>
-          События появятся здесь, когда пространства и организаторы их заведут.
+          События появятся здесь, когда площадки и организаторы их заведут.
         </template>
       </ListEmpty>
 

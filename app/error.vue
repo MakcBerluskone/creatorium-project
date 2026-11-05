@@ -7,11 +7,11 @@ const props = defineProps<{
 
 const notFound = computed(() => props.error.statusCode === 404)
 
-// Страница пространства, специалиста или события передаёт своё объяснение в data,
+// Страница площадки, специалиста или события передаёт своё объяснение в data,
 // а вторая кнопка ведёт туда, куда советует текст.
 const details = computed(() => {
   const data = props.error.data as { title?: string, text?: string, link?: { label: string, to: string } } | undefined
-  const link = { label: 'Найти пространство', to: '/spaces' }
+  const link = { label: 'Найти площадку', to: '/spaces' }
   if (notFound.value) {
     return {
       title: data?.title ?? 'Такой страницы нет',

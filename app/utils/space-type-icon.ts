@@ -9,7 +9,7 @@ const icons: Record<string, Component> = {
   event_hall: PartyPopper
 }
 
-/** Иконка вида пространства; для нового вида из админки — общая. */
+/** Иконка вида площадки; для нового вида из админки — общая. */
 export function spaceTypeIcon(slug: string | undefined): Component {
   return (slug && icons[slug]) || Building
 }

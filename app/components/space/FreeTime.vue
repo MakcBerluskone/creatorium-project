@@ -8,7 +8,7 @@ const props = defineProps<{
 
 const api = useSiteApi()
 
-// Компонент живёт только в браузере (ClientOnly): «сегодня» — по часам пространства на момент просмотра.
+// Компонент живёт только в браузере (ClientOnly): «сегодня» — по часам площадки на момент просмотра.
 const today = todayInTimeZone(props.space.timezone)
 const tomorrow = addDays(today, 1)
 const dates = Array.from({ length: props.space.booking_horizon_days + 1 }, (_, i) => addDays(today, i))
@@ -60,7 +60,7 @@ const heading = computed(() => {
 
 // Человек из другого пояса должен понимать, что время — не его.
 const differentZone = Intl.DateTimeFormat().resolvedOptions().timeZone !== props.space.timezone
-const note = `Время местное, по часам пространства${differentZone ? ` (${props.space.city.name})` : ''}. Выбрать время и забронировать можно в кабинете специалиста.`
+const note = `Время местное, по часам площадки${differentZone ? ` (${props.space.city.name})` : ''}. Выбрать время и забронировать можно в кабинете специалиста.`
 
 function dayLabel(value: string) {
   const parts = dayChipParts(value)
@@ -86,7 +86,7 @@ function scrollStrip(direction: number) {
       class="flex flex-col gap-2"
     >
       <legend class="mb-2 text-sm font-medium text-fg">
-        Помещение
+        Зал
       </legend>
       <div class="flex flex-wrap gap-2">
         <label
@@ -215,13 +215,13 @@ function scrollStrip(direction: number) {
           v-if="!slots.opens_at"
           class="text-fg-muted"
         >
-          В этот день пространство не работает.
+          В этот день площадка не работает.
         </p>
         <p
           v-else-if="slots.slots.length === 0"
           class="text-fg-muted"
         >
-          Свободного времени на этот день нет. Посмотрите другой день или другое помещение.
+          Свободного времени на этот день нет. Посмотрите другой день или другой зал.
         </p>
         <div
           v-else

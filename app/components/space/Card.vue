@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<{
   eager: false
 })
 
-const rooms = computed(() => plural(props.space.rooms_count, ['помещение', 'помещения', 'помещений']))
+const rooms = computed(() => plural(props.space.rooms_count, ['зал', 'зала', 'залов']))
 </script>
 
 <template>

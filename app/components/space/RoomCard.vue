@@ -4,13 +4,13 @@ import { Clock, Images } from '@lucide/vue'
 
 const props = defineProps<{
   room: Room
-  /** Вид пространства — для заглушки без фото. */
+  /** Вид площадки — для заглушки без фото. */
   type: string
   spaceName: string
 }>()
 
 const opened = ref<number | null>(null)
-const title = computed(() => `${props.spaceName}, помещение «${props.room.name}»`)
+const title = computed(() => `${props.spaceName}, зал «${props.room.name}»`)
 </script>
 
 <template>
@@ -20,12 +20,12 @@ const title = computed(() => `${props.spaceName}, помещение «${props.r
         v-if="room.photos[0]"
         type="button"
         class="group size-full"
-        :aria-label="`Фото помещения «${room.name}»: ${room.photos.length}`"
+        :aria-label="`Фото зала «${room.name}»: ${room.photos.length}`"
         @click="opened = 0"
       >
         <UiPhoto
           :photo="room.photos[0]"
-          :alt="`Помещение «${room.name}»`"
+          :alt="`Зал «${room.name}»`"
           sizes="(min-width: 640px) 224px, 100vw"
           class="transition-transform duration-300 group-hover:scale-[1.03]"
         />

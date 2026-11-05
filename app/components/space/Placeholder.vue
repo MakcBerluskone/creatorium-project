@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
-  /** Код вида пространства — по нему иконка. */
+  /** Код вида площадки — по нему иконка. */
   type?: string
   label?: string
 }>()

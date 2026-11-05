@@ -30,7 +30,7 @@ function submit() {
     action="/spaces"
     method="get"
     role="search"
-    aria-label="Поиск пространств"
+    aria-label="Поиск площадок"
     class="grid gap-3 rounded-card border border-line bg-panel p-3 shadow-overlay sm:grid-cols-[1fr_1fr_auto] sm:items-end sm:p-4"
     @submit.prevent="submit"
   >

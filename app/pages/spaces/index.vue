@@ -36,7 +36,12 @@ const typeName = computed(() => catalog.value.space_types.find(t => t.slug === f
 
 const found = computed(() => {
   const total = data.value?.meta.total ?? 0
-  return total === 0 ? 'Ничего не нашлось' : `Нашлось ${plural(total, ['пространство', 'пространства', 'пространств'])}`
+  if (total === 0) {
+    return 'Ничего не нашлось'
+  }
+  // «Нашлась 1 площадка», но «нашлось 2 площадки» и «нашлось 5 площадок».
+  const verb = total % 10 === 1 && total % 100 !== 11 ? 'Нашлась' : 'Нашлось'
+  return `${verb} ${plural(total, ['площадка', 'площадки', 'площадок'])}`
 })
 
 // Смена страницы — к началу списка, иначе человек остаётся у пагинации.
@@ -51,9 +56,9 @@ watch(page, () => {
 usePageSeo({
   title: () => {
     const parts = [typeName.value, cityName.value].filter(Boolean)
-    return parts.length ? `Пространства — ${parts.join(', ')}` : 'Пространства для репетиций, записи, съёмок и событий'
+    return parts.length ? `Площадки — ${parts.join(', ')}` : 'Площадки для репетиций, записи, съёмок и событий'
   },
-  description: 'Репетиционные базы, студии звукозаписи, фотостудии и залы по часам. Фото, цены, часы работы и свободное время, онлайн-бронь.'
+  description: 'Репетиционные базы, студии звукозаписи, фотостудии и площадки для мероприятий по часам. Фото, цены, часы работы и свободное время, онлайн-бронь.'
 })
 </script>
 
@@ -61,10 +66,10 @@ usePageSeo({
   <div class="container-page flex flex-col gap-8 py-8 md:py-12">
     <header class="flex flex-col gap-2">
       <h1 class="font-display text-2xl font-semibold md:text-4xl">
-        Пространства
+        Площадки
       </h1>
       <p class="max-w-2xl text-fg-muted md:text-lg">
-        Репетиционные базы, студии, фотостудии и залы по часам. На странице пространства — помещения, цены и свободное время.
+        Репетиционные базы, студии, фотостудии и площадки для мероприятий по часам. На странице площадки — залы, цены и свободное время.
       </p>
     </header>
 
@@ -106,7 +111,7 @@ usePageSeo({
         aria-live="polite"
       >
         <template v-if="loading && !data">
-          Ищем пространства…
+          Ищем площадки…
         </template>
         <template v-else-if="data">
           {{ found }}
@@ -135,7 +140,7 @@ usePageSeo({
 
       <ListEmpty
         v-else-if="data && data.data.length === 0"
-        title="Таких пространств пока нет"
+        title="Таких площадок пока нет"
         :can-reset="hasFilters || page > 1"
         @reset="reset()"
       >
@@ -143,7 +148,7 @@ usePageSeo({
           Попробуйте другой город или вид либо уберите часть слов из поиска.
         </template>
         <template v-else>
-          Пространства появятся здесь после проверки.
+          Площадки появятся здесь после проверки.
         </template>
       </ListEmpty>
 

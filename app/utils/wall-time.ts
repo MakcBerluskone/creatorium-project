@@ -1,5 +1,5 @@
 /*
- * Время пространства приходит строками «2026-11-05 18:00» в его поясе.
+ * Время площадки приходит строками «2026-11-05 18:00» в её поясе.
  * Показываем как есть и в пояс браузера не переводим. Для арифметики
  * считаем такие строки «часами на стене» и складываем их в UTC, где нет
  * переходов на летнее время.
@@ -18,7 +18,7 @@ export function todayLocal(now = new Date()): string {
   return new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(now)
 }
 
-/** Сегодняшняя дата YYYY-MM-DD в поясе пространства. */
+/** Сегодняшняя дата YYYY-MM-DD в поясе площадки. */
 export function todayInTimeZone(timeZone: string, now = new Date()): string {
   try {
     return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(now)
@@ -82,7 +82,7 @@ export function wallTime(value: string): string {
   return value.slice(11, 16)
 }
 
-/** Прибавить минуты к строке «YYYY-MM-DD HH:mm», не выходя из часов пространства. */
+/** Прибавить минуты к строке «YYYY-MM-DD HH:mm», не выходя из часов площадки. */
 export function addMinutesToWall(value: string, minutes: number): string {
   const [date = '', time = '00:00'] = value.split(' ')
   const [h, m] = time.split(':').map(Number)
@@ -92,7 +92,7 @@ export function addMinutesToWall(value: string, minutes: number): string {
 }
 
 /*
- * События. Начало и конец — тоже «часы на стене» пространства. Год пишем,
+ * События. Начало и конец — тоже «часы на стене» площадки. Год пишем,
  * только если он не текущий: афиша — на полгода вперёд.
  */
 

@@ -27,7 +27,7 @@ defineProps<{
         <span class="mt-auto flex flex-col gap-1">
           <span class="leading-snug font-semibold text-fg group-hover:text-primary-text">{{ type.name }}</span>
           <span class="flex items-center justify-between gap-2 text-sm text-fg-muted">
-            {{ type.spaces_count ? plural(type.spaces_count, ['пространство', 'пространства', 'пространств']) : 'Пока нет' }}
+            {{ type.spaces_count ? plural(type.spaces_count, ['площадка', 'площадки', 'площадок']) : 'Пока нет' }}
             <ArrowRight
               class="size-4 shrink-0 transition-transform group-hover:translate-x-0.5"
               aria-hidden="true"

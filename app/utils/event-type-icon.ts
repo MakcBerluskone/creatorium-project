@@ -1,7 +1,7 @@
 import type { Component } from 'vue'
 import { GraduationCap, Guitar, MicVocal, PartyPopper, Ticket } from '@lucide/vue'
 
-// Коды видов не меняются после создания, как у видов пространств.
+// Коды видов не меняются после создания, как у видов площадок.
 const icons: Record<string, Component> = {
   concert: MicVocal,
   jam: Guitar,

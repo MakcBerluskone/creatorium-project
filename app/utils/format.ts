@@ -3,7 +3,7 @@ const pluralRules = new Intl.PluralRules('ru-RU')
 const NBSP = String.fromCharCode(160)
 const rubles = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 })
 
-/** Форма слова для числа: [1 пространство, 2 пространства, 5 пространств]. */
+/** Форма слова для числа: [1 площадка, 2 площадки, 5 площадок]. */
 export function plural(count: number, forms: [one: string, few: string, many: string]): string {
   const rule = pluralRules.select(count)
   const word = rule === 'one' ? forms[0] : rule === 'few' ? forms[1] : forms[2]
@@ -14,7 +14,7 @@ export function formatRubles(amount: number): string {
   return `${rubles.format(amount)}${NBSP}₽`
 }
 
-/** Цена часа помещения; null — пространство называет её по запросу. */
+/** Цена часа зала; null — площадка называет её по запросу. */
 export function formatPricePerHour(amount: number | null): string {
   return amount === null ? 'по запросу' : `${formatRubles(amount)}/час`
 }

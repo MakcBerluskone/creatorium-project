@@ -13,7 +13,7 @@ const params = computed(() => ({
   per_page: 24
 }))
 
-// Как и пространства, список собирается в браузере по фильтрам из адреса.
+// Как и площадки, список собирается в браузере по фильтрам из адреса.
 const { data, status, error, refresh } = useAsyncData(
   () => `specialists:${JSON.stringify(params.value)}`,
   () => api.specialists(params.value),

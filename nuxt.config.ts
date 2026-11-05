@@ -70,7 +70,7 @@ export default defineNuxtConfig({
       concurrency: 4
     },
     hooks: {
-      // Страницы пространств, специалистов, событий и организаторов — по списку из API на момент сборки.
+      // Страницы площадок, специалистов, событий и организаторов — по списку из API на момент сборки.
       async 'prerender:routes'(routes) {
         const url = `${apiBase}/api/site/sitemap`
         let response: Response

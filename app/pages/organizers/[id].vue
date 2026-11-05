@@ -9,7 +9,7 @@ const route = useRoute()
 const id = Number(route.params.id)
 const api = useSiteApi()
 
-// Как у пространства: данные со сборки, а новые организаторы — из браузера через 200.html.
+// Как у площадки: данные со сборки, а новые организаторы — из браузера через 200.html.
 const { data: organizer, error, refresh } = await useAsyncData(`organizer:${id}`, () => api.organizer(id))
 
 if (error.value) {
