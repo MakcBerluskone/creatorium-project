@@ -75,7 +75,7 @@ usePageSeo({
       <UiSearchInput
         v-model="search"
         label="Что ищете"
-        placeholder="Микшер, Shure, прожектор"
+        placeholder="Shure SM58, Yamaha, название проката"
       />
       <UiSelect
         :model-value="filters.city"
@@ -132,7 +132,7 @@ usePageSeo({
         @reset="reset()"
       >
         <template v-if="hasFilters">
-          Попробуйте другой город или слово попроще: «микшер» вместо модели пульта.
+          Попробуйте другой город или запрос: ищем по производителю и модели техники, примечаниям к ней и названиям прокатов.
         </template>
         <template v-else>
           Прокаты появятся здесь после проверки.

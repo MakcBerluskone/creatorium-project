@@ -1,31 +1,15 @@
 <script setup lang="ts">
-import type { GearGroup, GearItem, Photo } from '#shared/types/site'
+import type { RentalEquipmentGroup } from '#shared/types/site'
 
 defineProps<{
-  /** Категории в порядке каталога, пустых нет — так отдаёт API. */
-  groups: GearGroup[]
+  /** Категории моделей в порядке каталога, пустых нет — так отдаёт API. */
+  groups: RentalEquipmentGroup[]
 }>()
 
-// Фото техники квадратное: thumb — 160 px, большое — 512 px. В просмотре — одно фото позиции.
-const opened = ref<GearItem | null>(null)
-const openedPhotos = computed<Photo[]>(() => {
-  const item = opened.value
-  if (!item?.photo_url) {
-    return []
-  }
-  return [{ url: item.photo_url, thumb_url: item.photo_thumb_url ?? item.photo_url, width: 512, height: 512 }]
-})
-const openedIndex = computed({
-  get: () => (openedPhotos.value.length ? 0 : null),
-  set: (value: number | null) => {
-    if (value === null) {
-      opened.value = null
-    }
-  }
-})
+const { opened, photos: openedPhotos, index: openedIndex, title: openedTitle } = useEquipmentLightbox()
 
 // Без единого фото в категории строки короче: место под заглушки не держим.
-function hasPhotos(group: GearGroup): boolean {
+function hasPhotos(group: RentalEquipmentGroup): boolean {
   return group.items.some(item => item.photo_thumb_url)
 }
 </script>
@@ -42,7 +26,7 @@ function hasPhotos(group: GearGroup): boolean {
           :key="group.slug"
         >
           <a
-            :href="`#gear-${group.slug}`"
+            :href="`#equipment-${group.slug}`"
             class="flex h-9 items-center gap-1.5 rounded-full border border-line-strong bg-panel px-3.5 text-sm font-medium whitespace-nowrap text-fg transition-colors hover:border-fg-subtle"
           >
             {{ group.name }}
@@ -54,13 +38,13 @@ function hasPhotos(group: GearGroup): boolean {
 
     <section
       v-for="group in groups"
-      :id="`gear-${group.slug}`"
+      :id="`equipment-${group.slug}`"
       :key="group.slug"
-      :aria-labelledby="`gear-${group.slug}-title`"
+      :aria-labelledby="`equipment-${group.slug}-title`"
       class="flex flex-col gap-3"
     >
       <h3
-        :id="`gear-${group.slug}-title`"
+        :id="`equipment-${group.slug}-title`"
         class="flex flex-wrap items-baseline gap-x-2 text-lg font-semibold text-fg"
       >
         {{ group.name }}
@@ -78,7 +62,7 @@ function hasPhotos(group: GearGroup): boolean {
               v-if="item.photo_thumb_url"
               type="button"
               class="group size-16 shrink-0 overflow-hidden rounded-control bg-surface-100 sm:size-20"
-              :aria-label="`Фото: ${item.name}`"
+              :aria-label="`Фото: ${item.display_name}`"
               @click="opened = item"
             >
               <img
@@ -97,7 +81,7 @@ function hasPhotos(group: GearGroup): boolean {
               aria-hidden="true"
             >
               <component
-                :is="gearCategoryIcon(group.slug)"
+                :is="equipmentCategoryIcon(group.slug)"
                 class="size-6"
                 :stroke-width="1.5"
               />
@@ -107,7 +91,7 @@ function hasPhotos(group: GearGroup): boolean {
           <div class="flex min-w-0 flex-1 flex-col gap-0.5">
             <div class="flex flex-col gap-0.5 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
               <p class="flex min-w-0 flex-wrap items-baseline gap-x-2">
-                <span class="min-w-0 font-medium wrap-break-word text-fg">{{ item.name }}</span>
+                <span class="min-w-0 font-medium wrap-break-word text-fg">{{ item.display_name }}</span>
                 <span class="text-sm whitespace-nowrap text-fg-muted">{{ formatPieces(item.quantity) }}</span>
               </p>
               <div class="flex shrink-0 flex-wrap items-baseline gap-x-3 sm:flex-col sm:items-end sm:gap-0">
@@ -122,6 +106,13 @@ function hasPhotos(group: GearGroup): boolean {
                 </p>
               </div>
             </div>
+            <!-- Примечание проката — про эту позицию, описание — общее у модели. -->
+            <p
+              v-if="item.note"
+              class="text-sm whitespace-pre-line wrap-break-word text-fg"
+            >
+              {{ item.note }}
+            </p>
             <p
               v-if="item.description"
               class="text-sm leading-relaxed whitespace-pre-line wrap-break-word text-fg-muted"
@@ -136,7 +127,7 @@ function hasPhotos(group: GearGroup): boolean {
     <UiLightbox
       v-model="openedIndex"
       :photos="openedPhotos"
-      :title="opened?.name ?? ''"
+      :title="openedTitle"
     />
   </div>
 </template>

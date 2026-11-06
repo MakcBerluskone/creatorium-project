@@ -317,7 +317,7 @@ export interface components {
              * @description Категории техники прокатов — все, по порядку: сколько прокатов
              *     сдают технику этой категории и сколько в ней позиций
              */
-            gear_categories: {
+            equipment_categories: {
                 slug: string;
                 name: string;
                 rentals_count: number;
@@ -534,12 +534,13 @@ export interface components {
             logo_thumb_url: string | null;
             cover: components["schemas"]["PhotoResource"] | null;
             /** @description Сколько позиций техники в каталоге */
-            gear_count: number;
+            equipment_count: number;
             /** @description «от N ₽/сутки»: самая низкая цена техники за сутки, рубли */
             price_from: number | null;
-            /** @description Только при поиске: до трёх позиций техники, где нашлась строка */
+            /** @description Только при поиске: до трёх позиций техники, где нашлась строка, — у производителя, в модели или в примечании */
             matches?: {
-                name: string;
+                display_name: string;
+                note: string | null;
                 price_per_day: number;
             }[];
         };
@@ -576,14 +577,19 @@ export interface components {
             cancellation_hours: number;
             /** @description На сколько дней вперёд можно заказать */
             order_horizon_days: number;
-            /** @description Техника по категориям в порядке каталога; пустых категорий нет. Цены и залог — рубли, платят на месте */
-            gear: {
+            /**
+             * @description Техника по категориям моделей в порядке каталога; пустых категорий нет. display_name — «Shure SM58»,
+             *     description — общее описание модели, note — примечание проката, фото — своё у позиции, а нет его — модели.
+             *     Цены и залог — рубли, платят на месте
+             */
+            equipment: {
                 slug: string;
                 name: string;
                 items: {
                     id: number;
-                    name: string;
+                    display_name: string;
                     description: string | null;
+                    note: string | null;
                     quantity: number;
                     price_per_day: number;
                     deposit: number;
@@ -693,8 +699,15 @@ export interface components {
             }[];
             /** @description Доп. оборудование по порядку: берут к брони любого зала, платят на месте */
             equipment: {
-                name: string;
+                /** @description Модель с производителем: «Zildjian A Custom» */
+                display_name: string;
+                /** @description Общее описание модели */
                 description: string | null;
+                /** @description Примечание площадки */
+                note: string | null;
+                /** @description Фото 512×512: своё у позиции, а нет его — модели; null — нет */
+                photo_url: string | null;
+                photo_thumb_url: string | null;
                 /** @description Сколько единиц у площадки */
                 quantity: number;
                 /** @description Цена, рубли; 0 — бесплатно */
@@ -969,7 +982,7 @@ export interface operations {
             query?: {
                 /** @description Код города из /api/site/catalog: moscow */
                 city?: string | null;
-                /** @description Подстрока названия проката или названия и описания техники: «микшер», «Shure» */
+                /** @description Подстрока названия проката, производителя или модели техники — и без учёта пробелов и дефисов: «sm 58» найдёт SM58 — или примечания к позиции: «Shure», «XLR» */
                 search?: string | null;
                 page?: number;
                 /** @description По умолчанию 24 */

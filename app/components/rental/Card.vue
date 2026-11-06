@@ -6,7 +6,7 @@ const props = defineProps<{
   rental: RentalListItem
 }>()
 
-const gearCount = computed(() => plural(props.rental.gear_count, ['позиция', 'позиции', 'позиций']))
+const equipmentCount = computed(() => plural(props.rental.equipment_count, ['позиция', 'позиции', 'позиций']))
 </script>
 
 <template>
@@ -53,7 +53,7 @@ const gearCount = computed(() => plural(props.rental.gear_count, ['позици�
           от <span class="font-semibold">{{ formatRubles(rental.price_from) }}</span>/сутки
         </span>
         <span class="text-sm text-fg-muted">
-          {{ rental.gear_count ? gearCount : 'Техники пока нет' }}
+          {{ rental.equipment_count ? equipmentCount : 'Техники пока нет' }}
         </span>
       </p>
 
@@ -70,7 +70,14 @@ const gearCount = computed(() => plural(props.rental.gear_count, ['позици�
             :key="index"
             class="flex items-baseline justify-between gap-3"
           >
-            <span class="min-w-0 truncate text-fg">{{ match.name }}</span>
+            <!-- Строка могла найтись и в примечании проката: «XLR» — показываем его под моделью. -->
+            <span class="flex min-w-0 flex-col">
+              <span class="truncate text-fg">{{ match.display_name }}</span>
+              <span
+                v-if="match.note"
+                class="line-clamp-2 text-xs wrap-break-word text-fg-muted"
+              >{{ match.note }}</span>
+            </span>
             <span class="shrink-0 font-medium whitespace-nowrap text-fg">{{ formatPricePerDay(match.price_per_day) }}</span>
           </li>
         </ul>

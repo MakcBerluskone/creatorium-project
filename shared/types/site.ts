@@ -8,13 +8,15 @@ export type SpaceType = Catalog['space_types'][number]
 export type Specialization = Catalog['specializations'][number]
 export type CollectiveKindItem = Catalog['collective_kinds'][number]
 export type EventType = Catalog['event_types'][number]
-export type GearCategory = Catalog['gear_categories'][number]
+/** Категория моделей техники: Звук, Свет, Барабаны и перкуссия… — коды заданы в API. */
+export type EquipmentCategory = Catalog['equipment_categories'][number]
 
 export type Photo = Schemas['PhotoResource']
 export type SpaceListItem = Schemas['SpaceListItemResource']
 export type Space = Schemas['SpaceResource']
 export type Room = Space['rooms'][number]
-export type Equipment = Space['equipment'][number]
+/** Доп. оборудование площадки: название от модели, примечание площадки, фото — своё или модели. */
+export type SpaceEquipmentItem = Space['equipment'][number]
 export type SpaceHour = Schemas['SpaceHourResource']
 export type DaySlots = Schemas['DaySlotsResource']
 export type Slot = DaySlots['slots'][number]
@@ -38,9 +40,10 @@ export type RentalListItem = Schemas['RentalListItemResource']
 /** Позиция техники, где нашлась строка поиска: приходит только при поиске. */
 export type RentalMatch = NonNullable<RentalListItem['matches']>[number]
 export type Rental = Schemas['RentalResource']
-/** Категория техники проката с позициями: Звук, Свет, Сцена и конструкции… */
-export type GearGroup = Rental['gear'][number]
-export type GearItem = GearGroup['items'][number]
+/** Категория техники проката с позициями: Звук, Свет, Барабаны и перкуссия… */
+export type RentalEquipmentGroup = Rental['equipment'][number]
+/** Позиция техники проката: название от модели, примечание проката, фото — своё или модели. */
+export type RentalEquipmentItem = RentalEquipmentGroup['items'][number]
 export type RentalService = Rental['services'][number]
 
 export type Sitemap = Schemas['SitemapResource']

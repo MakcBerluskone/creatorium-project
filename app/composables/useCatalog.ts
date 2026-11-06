@@ -9,7 +9,7 @@
 export async function useCatalog() {
   const api = useSiteApi()
   const result = await useAsyncData('catalog', () => api.catalog(), {
-    default: () => ({ cities: [], space_types: [], specializations: [], collective_kinds: [], event_types: [], gear_categories: [] })
+    default: () => ({ cities: [], space_types: [], specializations: [], collective_kinds: [], event_types: [], equipment_categories: [] })
   })
 
   if (import.meta.server && result.error.value) {

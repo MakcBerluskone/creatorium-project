@@ -32,12 +32,12 @@ if (error.value) {
 }
 
 const address = computed(() => (rental.value ? formatAddress(rental.value) : ''))
-const gearCount = computed(() => rental.value?.gear.reduce((sum, group) => sum + group.items.length, 0) ?? 0)
-const gearCountLabel = computed(() => plural(gearCount.value, ['позиция', 'позиции', 'позиций']))
+const equipmentCount = computed(() => rental.value?.equipment.reduce((sum, group) => sum + group.items.length, 0) ?? 0)
+const equipmentCountLabel = computed(() => plural(equipmentCount.value, ['позиция', 'позиции', 'позиций']))
 
 // Бесплатные позиции в «от N ₽» не считаем.
 const priceFrom = computed(() => {
-  const prices = (rental.value?.gear ?? []).flatMap(group => group.items.map(item => item.price_per_day)).filter(price => price > 0)
+  const prices = (rental.value?.equipment ?? []).flatMap(group => group.items.map(item => item.price_per_day)).filter(price => price > 0)
   return prices.length ? Math.min(...prices) : null
 })
 
@@ -71,7 +71,7 @@ usePageSeo({
     }
     const facts = [
       `Прокат звука и света, ${address.value}`,
-      gearCount.value ? gearCountLabel.value + (priceFrom.value !== null ? `, от ${formatRubles(priceFrom.value)}/сутки` : '') : '',
+      equipmentCount.value ? equipmentCountLabel.value + (priceFrom.value !== null ? `, от ${formatRubles(priceFrom.value)}/сутки` : '') : '',
       r.description ?? 'Техника с ценами за сутки, залог, услуги и условия аренды'
     ]
     return excerpt(facts.filter(Boolean).join('. '), 200)
@@ -135,14 +135,14 @@ const barContactClass = 'inline-flex size-11 items-center justify-center gap-2 r
               {{ address }}
             </span>
             <span
-              v-if="gearCount"
+              v-if="equipmentCount"
               class="flex items-center gap-1.5"
             >
               <Package
                 class="size-4 shrink-0"
                 aria-hidden="true"
               />
-              {{ gearCountLabel }}
+              {{ equipmentCountLabel }}
             </span>
           </p>
         </div>
@@ -174,27 +174,27 @@ const barContactClass = 'inline-flex size-11 items-center justify-center gap-2 r
           </section>
 
           <section
-            id="gear"
-            aria-labelledby="gear-title"
+            id="equipment"
+            aria-labelledby="equipment-title"
             class="flex flex-col gap-4"
           >
             <div class="flex flex-col gap-1">
               <h2
-                id="gear-title"
+                id="equipment-title"
                 class="font-display text-xl font-semibold"
               >
                 Техника
               </h2>
               <p
-                v-if="gearCount"
+                v-if="equipmentCount"
                 class="text-fg-muted"
               >
                 Цены — за сутки аренды, оплата и залог — на месте.
               </p>
             </div>
-            <RentalGear
-              v-if="gearCount"
-              :groups="rental.gear"
+            <RentalEquipment
+              v-if="equipmentCount"
+              :groups="rental.equipment"
             />
             <p
               v-else
