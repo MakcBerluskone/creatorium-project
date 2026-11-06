@@ -12,8 +12,9 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Города, виды площадок, специализации, виды коллективов и виды событий для
-         *     поиска. Скрытые админом не приходят. Счётчики — по тому, что видно на сайте
+         * Города, виды площадок, специализации, виды коллективов, виды событий и
+         *     категории техники прокатов для поиска. Скрытые админом не приходят.
+         *     Счётчики — по тому, что видно на сайте
          */
         get: operations["site.catalog"];
         put?: never;
@@ -118,6 +119,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/rentals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Поиск по городу и по названию проката или технике: «микшер»,
+         *     «Shure». При поиске у проката — до трёх совпавших позиций. Прокаты
+         *     с логотипом — первыми, среди них — новые
+         */
+        get: operations["site.rentals.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/rentals/{rental}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Страница проката: карточка, условия аренды, техника по категориям и
+         *     услуги с ценами. Не проверен или скрыт — 404
+         */
+        get: operations["site.rentals.show"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sitemap": {
         parameters: {
             query?: never;
@@ -126,7 +168,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Все страницы площадок, специалистов, коллективов, событий и организаторов: по ним
+         * Все страницы площадок, специалистов, коллективов, событий, организаторов и прокатов: по ним
          *     сборка сайта заранее собирает страницы и sitemap.xml для поисковиков
          */
         get: operations["site.sitemap"];
@@ -245,6 +287,7 @@ export interface components {
                 spaces_count: number;
                 specialists_count: number;
                 collectives_count: number;
+                rentals_count: number;
             }[];
             /** @description Виды площадок */
             space_types: {
@@ -269,6 +312,16 @@ export interface components {
                 slug: string;
                 name: string;
                 events_count: number;
+            }[];
+            /**
+             * @description Категории техники прокатов — все, по порядку: сколько прокатов
+             *     сдают технику этой категории и сколько в ней позиций
+             */
+            gear_categories: {
+                slug: string;
+                name: string;
+                rentals_count: number;
+                items_count: number;
             }[];
         };
         /**
@@ -468,6 +521,90 @@ export interface components {
             width: number;
             height: number;
         };
+        /** RentalListItemResource */
+        RentalListItemResource: {
+            id: number;
+            name: string;
+            city: {
+                slug: string;
+                name: string;
+            };
+            address: string | null;
+            /** @description Логотип 160×160; null — не загружен */
+            logo_thumb_url: string | null;
+            cover: components["schemas"]["PhotoResource"] | null;
+            /** @description Сколько позиций техники в каталоге */
+            gear_count: number;
+            /** @description «от N ₽/сутки»: самая низкая цена техники за сутки, рубли */
+            price_from: number | null;
+            /** @description Только при поиске: до трёх позиций техники, где нашлась строка */
+            matches?: {
+                name: string;
+                price_per_day: number;
+            }[];
+        };
+        /** RentalResource */
+        RentalResource: {
+            id: number;
+            name: string;
+            city: {
+                slug: string;
+                name: string;
+            };
+            /** @description Откуда забирают технику при самовывозе */
+            address: string | null;
+            /** @description Пояс проката: даты заказов — в нём */
+            timezone: string;
+            description: string | null;
+            /** @description Телефон для связи +7XXXXXXXXXX */
+            phone: string | null;
+            /** @description Ник или канал в Telegram без @ */
+            telegram: string | null;
+            links: string[];
+            /** @description Логотип 512×512; null — не загружен */
+            logo_url: string | null;
+            logo_thumb_url: string | null;
+            /** @description Условия аренды: документы, порядок выдачи и возврата */
+            terms: string | null;
+            /** @description Фото проката; первое — обложка */
+            photos: components["schemas"]["PhotoResource"][];
+            /** @description Заказ ждёт подтверждения проката */
+            requires_confirmation: boolean;
+            /** @description За сколько часов прокат отвечает на заказ; без ответа заказ отменяется сам */
+            confirmation_hours: number;
+            /** @description Бесплатная отмена не позже чем за столько часов до начала аренды */
+            cancellation_hours: number;
+            /** @description На сколько дней вперёд можно заказать */
+            order_horizon_days: number;
+            /** @description Техника по категориям в порядке каталога; пустых категорий нет. Цены и залог — рубли, платят на месте */
+            gear: {
+                slug: string;
+                name: string;
+                items: {
+                    id: number;
+                    name: string;
+                    description: string | null;
+                    quantity: number;
+                    price_per_day: number;
+                    deposit: number;
+                    photo_url: string | null;
+                    photo_thumb_url: string | null;
+                }[];
+            }[];
+            /** @description Услуги по порядку: доставка, монтаж, техник */
+            services: {
+                id: number;
+                name: string;
+                description: string | null;
+                price: number;
+                price_unit: {
+                    slug: string;
+                    name: string;
+                };
+            }[];
+            /** Format: date-time */
+            updated_at: string | null;
+        };
         /** SitemapResource */
         SitemapResource: {
             spaces: {
@@ -487,6 +624,10 @@ export interface components {
                 updated_at: string;
             }[];
             organizers: {
+                id: number;
+                updated_at: string;
+            }[];
+            rentals: {
                 id: number;
                 updated_at: string;
             }[];
@@ -818,6 +959,61 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["OrganizerResource"];
+                    };
+                };
+            };
+        };
+    };
+    "site.rentals.index": {
+        parameters: {
+            query?: {
+                /** @description Код города из /api/site/catalog: moscow */
+                city?: string | null;
+                /** @description Подстрока названия проката или названия и описания техники: «микшер», «Shure» */
+                search?: string | null;
+                page?: number;
+                /** @description По умолчанию 24 */
+                per_page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `RentalListItemResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RentalListItemResource"][];
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "site.rentals.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                rental: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `RentalResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["RentalResource"];
                     };
                 };
             };

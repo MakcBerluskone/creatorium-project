@@ -2,7 +2,7 @@
 
 Сайт creatorium.ru: Nuxt 4, TypeScript, Tailwind CSS 4. Название — в `app/app.config.ts`. Что на сайте и почему так — разделы «Сайт» и «Айдентика» в [решениях](https://github.com/MakcBerluskone/creatorium-docs/blob/master/architecture/decisions.md). Кабинеты живут в `creatorium-admin`, API — в `creatorium-api`.
 
-Входа на сайте нет: регистрация, вход и бронь — в кабинетах. Сайт показывает каталог площадок, специалистов и коллективов, свободное время залов, афишу событий и ведёт в кабинеты. Что в афише и почему — раздел «События» в решениях.
+Входа на сайте нет: регистрация, вход и бронь — в кабинетах. Сайт показывает каталог площадок, специалистов, коллективов и прокатов звука и света, свободное время залов, афишу событий и ведёт в кабинеты. Технику проката тоже заказывают в кабинете — специалиста, организатора или площадки, смотря кто заказывает. Что в афише и почему — раздел «События» в решениях.
 
 ## Запуск
 
@@ -34,8 +34,9 @@ pnpm dev
 |---|---|---|
 | `NUXT_PUBLIC_API_BASE` | `http://localhost:8010` | API без `/api/site`. Из него сайт берёт данные и в браузере, и на сборке |
 | `NUXT_PUBLIC_SITE_URL` | `http://localhost:3001` | адрес сайта: канонические ссылки, `og:url`, `sitemap.xml`, `robots.txt` |
-| `NUXT_PUBLIC_SPACE_CABINET_URL` | `https://space.creatorium.loc:5177` | кабинет площадки: «Зарегистрировать площадку» → `/register` |
-| `NUXT_PUBLIC_SPECIALIST_CABINET_URL` | `https://app.creatorium.loc:5178` | кабинет специалиста: «Забронировать» → `/bookings/new/{id}`, «Создать карточку» → `/register` |
+| `NUXT_PUBLIC_SPACE_CABINET_URL` | `https://space.creatorium.loc:5177` | кабинет площадки: «Зарегистрировать площадку» → `/register`, «Заказать технику» → `/rentals/{id}` |
+| `NUXT_PUBLIC_SPECIALIST_CABINET_URL` | `https://app.creatorium.loc:5178` | кабинет специалиста: «Забронировать» → `/bookings/new/{id}`, «Создать карточку» → `/register`, «Заказать технику» → `/rentals/{id}` |
+| `NUXT_PUBLIC_ORGANIZER_CABINET_URL` | `https://org.creatorium.loc:5179` | кабинет организатора: «Заказать технику» → `/rentals/{id}` |
 
 ## Откуда данные
 
@@ -44,8 +45,8 @@ API — `GET /api/site/*` без авторизации, контракт — `a
 | Что | Когда грузится |
 |---|---|
 | главная: виды, первые площадки, ближайшие события и специалисты | на сборке |
-| страница площадки, специалиста, коллектива, события и организатора | на сборке; страницы, которых не было на сборке, — в браузере |
-| поиск площадок, специалистов и коллективов | в браузере: фильтры живут в адресе (`/spaces?city=moscow&type=photo_studio&search=…&page=2`, `/collectives?kind=band&city=moscow`) |
+| страница площадки, специалиста, коллектива, события, организатора и проката | на сборке; страницы, которых не было на сборке, — в браузере |
+| поиск площадок, специалистов, коллективов и прокатов | в браузере: фильтры живут в адресе (`/spaces?city=moscow&type=photo_studio&search=…&page=2`, `/collectives?kind=band&city=moscow`, `/rentals?city=moscow&search=микшер`) |
 | афиша `/events` | в браузере: фильтры в адресе (`/events?city=moscow&type=concert&from=2026-11-20&to=2026-11-22&page=2`) |
 | свободное время зала | всегда в браузере, по выбранным залу и дню |
 | страница события | на сборке, а в браузере тихо сверяется с API: событие прошло — пропадает «Билеты», отменили — «Событие не найдено». API не ответил — остаётся собранное |
@@ -58,8 +59,8 @@ API — `GET /api/site/*` без авторизации, контракт — `a
 
 `pnpm generate` собирает в `.output/public`:
 
-- `/`, `/spaces`, `/specialists`, `/collectives`, `/events`, `/for-spaces`, `/for-specialists`;
-- `/spaces/{id}`, `/specialists/{id}`, `/collectives/{id}`, `/events/{id}` и `/organizers/{id}` — по списку из `GET /api/site/sitemap` на момент сборки (хук `prerender:routes` в `nuxt.config.ts`);
+- `/`, `/spaces`, `/specialists`, `/collectives`, `/events`, `/rentals`, `/for-spaces`, `/for-specialists`;
+- `/spaces/{id}`, `/specialists/{id}`, `/collectives/{id}`, `/events/{id}`, `/organizers/{id}` и `/rentals/{id}` — по списку из `GET /api/site/sitemap` на момент сборки (хук `prerender:routes` в `nuxt.config.ts`);
 - `sitemap.xml` и `robots.txt` со строкой `Sitemap:` — из `server/routes/`, адреса берутся из `NUXT_PUBLIC_SITE_URL`;
 - `200.html` — пустая SPA-оболочка, `404.html` — страница «такой страницы нет».
 
@@ -70,7 +71,7 @@ API — `GET /api/site/*` без авторизации, контракт — `a
 На хостинге Apache, правила — в `public/.htaccess`, при сборке он копируется в корень:
 
 1. Файл или каталог с `index.html` есть — отдаётся как есть: `/spaces` → `spaces/index.html`, без редиректа на слеш.
-2. Нет файла для `/spaces/{id}`, `/specialists/{id}`, `/collectives/{id}`, `/events/{id}` или `/organizers/{id}` — отдаётся `200.html`. Nuxt запускается в браузере, страница сама берёт данные из API. Нет такой площадки — показывает «Площадка не найдена».
+2. Нет файла для `/spaces/{id}`, `/specialists/{id}`, `/collectives/{id}`, `/events/{id}`, `/organizers/{id}` или `/rentals/{id}` — отдаётся `200.html`. Nuxt запускается в браузере, страница сама берёт данные из API. Нет такой площадки — показывает «Площадка не найдена».
 3. Всё остальное — 404 со страницей `404.html`.
 
 Собранная страница показывает данные на момент сборки, свободное время на ней всегда живое.

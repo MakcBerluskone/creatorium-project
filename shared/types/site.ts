@@ -8,6 +8,7 @@ export type SpaceType = Catalog['space_types'][number]
 export type Specialization = Catalog['specializations'][number]
 export type CollectiveKindItem = Catalog['collective_kinds'][number]
 export type EventType = Catalog['event_types'][number]
+export type GearCategory = Catalog['gear_categories'][number]
 
 export type Photo = Schemas['PhotoResource']
 export type SpaceListItem = Schemas['SpaceListItemResource']
@@ -33,12 +34,22 @@ export type EventDetails = Schemas['EventResource']
 export type EventParticipant = EventDetails['participants'][number]
 export type Organizer = Schemas['OrganizerResource']
 
+export type RentalListItem = Schemas['RentalListItemResource']
+/** Позиция техники, где нашлась строка поиска: приходит только при поиске. */
+export type RentalMatch = NonNullable<RentalListItem['matches']>[number]
+export type Rental = Schemas['RentalResource']
+/** Категория техники проката с позициями: Звук, Свет, Сцена и конструкции… */
+export type GearGroup = Rental['gear'][number]
+export type GearItem = GearGroup['items'][number]
+export type RentalService = Rental['services'][number]
+
 export type Sitemap = Schemas['SitemapResource']
 
 export type SpacesQuery = NonNullable<paths['/spaces']['get']['parameters']['query']>
 export type SpecialistsQuery = NonNullable<paths['/specialists']['get']['parameters']['query']>
 export type CollectivesQuery = NonNullable<paths['/collectives']['get']['parameters']['query']>
 export type EventsQuery = NonNullable<paths['/events']['get']['parameters']['query']>
+export type RentalsQuery = NonNullable<paths['/rentals']['get']['parameters']['query']>
 
 /** Обёртка ресурса Laravel: ответ лежит в data. */
 export interface Wrapped<T> {

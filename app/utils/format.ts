@@ -19,7 +19,12 @@ export function formatPricePerHour(amount: number | null): string {
   return amount === null ? 'по запросу' : `${formatRubles(amount)}/час`
 }
 
-/** Цена доп. оборудования: «200 ₽ за бронь», «100 ₽ за час»; 0 — бесплатно. */
+/** Цена техники проката: «1 500 ₽/сутки»; 0 — бесплатно. */
+export function formatPricePerDay(amount: number): string {
+  return amount === 0 ? 'бесплатно' : `${formatRubles(amount)}/сутки`
+}
+
+/** Цена доп. оборудования и услуги проката: «200 ₽ за бронь», «3 000 ₽ за заказ»; 0 — бесплатно. */
 export function formatEquipmentPrice(price: number, unit: { name: string }): string {
   return price === 0 ? 'бесплатно' : `${formatRubles(price)} ${unit.name}`
 }
@@ -39,10 +44,10 @@ export function formatDuration(minutes: number): string {
   return rest === 0 ? `${hours}${NBSP}ч` : `${hours}${NBSP}ч ${rest}${NBSP}мин`
 }
 
-/** Адрес в API — без города, город приходит отдельно. */
-export function formatAddress(space: { city: { name: string }, address: string }): string {
-  const address = space.address.trim()
-  return address ? `${space.city.name}, ${address}` : space.city.name
+/** Адрес в API — без города, город приходит отдельно. У проката адреса может не быть. */
+export function formatAddress(place: { city: { name: string }, address: string | null }): string {
+  const address = place.address?.trim()
+  return address ? `${place.city.name}, ${address}` : place.city.name
 }
 
 /** Две буквы для аватара без фото. */

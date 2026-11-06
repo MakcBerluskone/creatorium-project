@@ -9,6 +9,9 @@ import type {
   EventsQuery,
   Organizer,
   Paginated,
+  Rental,
+  RentalListItem,
+  RentalsQuery,
   Space,
   SpaceListItem,
   SpacesQuery,
@@ -69,6 +72,11 @@ export function useSiteApi() {
 
     event: (id: number) => request<Wrapped<EventDetails>>(`/events/${id}`).then(r => r.data),
 
-    organizer: (id: number) => request<Wrapped<Organizer>>(`/organizers/${id}`).then(r => r.data)
+    organizer: (id: number) => request<Wrapped<Organizer>>(`/organizers/${id}`).then(r => r.data),
+
+    rentals: (query: RentalsQuery = {}, signal?: AbortSignal) =>
+      request<Paginated<RentalListItem>>('/rentals', { query: compactQuery(query), signal }),
+
+    rental: (id: number) => request<Wrapped<Rental>>(`/rentals/${id}`).then(r => r.data)
   }
 }

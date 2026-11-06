@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { Menu, X } from '@lucide/vue'
 
-// Шесть пунктов помещаются в строку только с lg, уже — меню за кнопкой.
+// Пункты помещаются в строку только с lg, уже — меню за кнопкой. Седьмой,
+// «Прокат», на 1024 px в строку не влезает: с ним шапке нужно ≈1010 px из 960.
+// Поэтому в строке он с xl, а на lg — только в подвале. В меню за кнопкой — всегда.
 const links = [
   { to: '/spaces', label: 'Площадки' },
   { to: '/specialists', label: 'Специалисты' },
   { to: '/collectives', label: 'Коллективы' },
   { to: '/events', label: 'Афиша' },
+  { to: '/rentals', label: 'Прокат', wide: true },
   { to: '/for-spaces', label: 'Для площадок' },
   { to: '/for-specialists', label: 'Для специалистов' }
 ]
@@ -41,6 +44,7 @@ function onKeydown(event: KeyboardEvent) {
           <li
             v-for="link in links"
             :key="link.to"
+            :class="{ 'hidden xl:block': link.wide }"
           >
             <NuxtLink
               :to="link.to"

@@ -18,7 +18,8 @@ const columns: { title: string, items: FooterLink[] }[] = [
       { label: 'Площадки', to: '/spaces' },
       { label: 'Специалисты', to: '/specialists' },
       { label: 'Коллективы', to: '/collectives' },
-      { label: 'Афиша', to: '/events' }
+      { label: 'Афиша', to: '/events' },
+      { label: 'Прокат', to: '/rentals' }
     ]
   },
   {

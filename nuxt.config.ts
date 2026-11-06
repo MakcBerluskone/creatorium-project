@@ -39,7 +39,8 @@ export default defineNuxtConfig({
       apiBase: 'http://localhost:8010',
       siteUrl: 'http://localhost:3001',
       spaceCabinetUrl: 'https://space.creatorium.loc:5177',
-      specialistCabinetUrl: 'https://app.creatorium.loc:5178'
+      specialistCabinetUrl: 'https://app.creatorium.loc:5178',
+      organizerCabinetUrl: 'https://org.creatorium.loc:5179'
     }
   },
 
@@ -65,12 +66,12 @@ export default defineNuxtConfig({
     prerender: {
       // Список страниц задаём сами: обход ссылок пошёл бы по фильтрам вида /spaces?type=…
       crawlLinks: false,
-      routes: ['/', '/spaces', '/specialists', '/collectives', '/events', '/for-spaces', '/for-specialists', '/sitemap.xml', '/robots.txt'],
+      routes: ['/', '/spaces', '/specialists', '/collectives', '/events', '/rentals', '/for-spaces', '/for-specialists', '/sitemap.xml', '/robots.txt'],
       // У API лимит 600 запросов в минуту с одного адреса.
       concurrency: 4
     },
     hooks: {
-      // Страницы площадок, специалистов, коллективов, событий и организаторов — по списку из API на момент сборки.
+      // Страницы площадок, специалистов, коллективов, событий, организаторов и прокатов — по списку из API на момент сборки.
       async 'prerender:routes'(routes) {
         const url = `${apiBase}/api/site/sitemap`
         let response: Response
@@ -97,6 +98,9 @@ export default defineNuxtConfig({
         }
         for (const organizer of data.organizers) {
           routes.add(`/organizers/${organizer.id}`)
+        }
+        for (const rental of data.rentals) {
+          routes.add(`/rentals/${rental.id}`)
         }
       }
     }
