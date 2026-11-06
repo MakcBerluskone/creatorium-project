@@ -35,7 +35,7 @@ pnpm dev
 | `NUXT_PUBLIC_API_BASE` | `http://localhost:8010` | API без `/api/site`. Из него сайт берёт данные и в браузере, и на сборке |
 | `NUXT_PUBLIC_SITE_URL` | `http://localhost:3001` | адрес сайта: канонические ссылки, `og:url`, `sitemap.xml`, `robots.txt` |
 | `NUXT_PUBLIC_SPACE_CABINET_URL` | `https://space.creatorium.loc:5177` | кабинет площадки: «Зарегистрировать площадку» → `/register`, «Заказать технику» → `/rentals/{id}` |
-| `NUXT_PUBLIC_SPECIALIST_CABINET_URL` | `https://app.creatorium.loc:5178` | кабинет специалиста: «Забронировать» → `/bookings/new/{id}`, «Создать карточку» → `/register`, «Заказать технику» → `/rentals/{id}` |
+| `NUXT_PUBLIC_SPECIALIST_CABINET_URL` | `https://spec.creatorium.loc:5178` | кабинет специалиста: «Забронировать» → `/bookings/new/{id}`, «Создать карточку» → `/register`, «Заказать технику» → `/rentals/{id}` |
 | `NUXT_PUBLIC_ORGANIZER_CABINET_URL` | `https://org.creatorium.loc:5179` | кабинет организатора: «Заказать технику» → `/rentals/{id}` |
 
 ## Откуда данные

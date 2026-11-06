@@ -39,7 +39,7 @@ export default defineNuxtConfig({
       apiBase: 'http://localhost:8010',
       siteUrl: 'http://localhost:3001',
       spaceCabinetUrl: 'https://space.creatorium.loc:5177',
-      specialistCabinetUrl: 'https://app.creatorium.loc:5178',
+      specialistCabinetUrl: 'https://spec.creatorium.loc:5178',
       organizerCabinetUrl: 'https://org.creatorium.loc:5179'
     }
   },
