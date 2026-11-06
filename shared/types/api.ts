@@ -12,10 +12,47 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Города, виды площадок, специализации и виды событий для поиска. Скрытые админом
-         *     не приходят. Счётчики — по тому, что видно на сайте
+         * Города, виды площадок, специализации, виды коллективов и виды событий для
+         *     поиска. Скрытые админом не приходят. Счётчики — по тому, что видно на сайте
          */
         get: operations["site.catalog"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/collectives": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Поиск по виду, городу и названию. Коллективы с логотипом —
+         *     первыми, среди них — новые
+         */
+        get: operations["site.collectives.index"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/collectives/{collective}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Страница коллектива. Не видна на сайте — 404 */
+        get: operations["site.collectives.show"];
         put?: never;
         post?: never;
         delete?: never;
@@ -89,8 +126,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Все страницы площадок, специалистов, событий и организаторов: по ним сборка сайта
-         *     заранее собирает страницы и sitemap.xml для поисковиков
+         * Все страницы площадок, специалистов, коллективов, событий и организаторов: по ним
+         *     сборка сайта заранее собирает страницы и sitemap.xml для поисковиков
          */
         get: operations["site.sitemap"];
         put?: never;
@@ -207,6 +244,7 @@ export interface components {
                 name: string;
                 spaces_count: number;
                 specialists_count: number;
+                collectives_count: number;
             }[];
             /** @description Виды площадок */
             space_types: {
@@ -220,12 +258,87 @@ export interface components {
                 name: string;
                 specialists_count: number;
             }[];
+            /** @description Виды коллективов — все, по порядку; код — в фильтре kind */
+            collective_kinds: {
+                slug: string;
+                name: string;
+                collectives_count: number;
+            }[];
             /** @description Виды событий; счётчик — предстоящие на афише */
             event_types: {
                 slug: string;
                 name: string;
                 events_count: number;
             }[];
+        };
+        /**
+         * CollectiveKind
+         * @description Вид коллектива — один, обязателен. Список задан в коде, а не справочником: по нему ищет сайт, а новые виды появляются редко.
+         *     | |
+         *     |---|
+         *     | `band` <br/> Группа: постоянный творческий состав |
+         *     | `team` <br/> Команда: сборная под событие — ведущий, диджей, фотограф |
+         *     | `production` <br/> Продакшн: фото- или видеокоманда |
+         * @enum {string}
+         */
+        CollectiveKind: "band" | "team" | "production";
+        /** CollectiveListItemResource */
+        CollectiveListItemResource: {
+            id: number;
+            name: string;
+            /** @description Вид: код для фильтра и название */
+            kind: {
+                slug: string;
+                name: string;
+            };
+            city: {
+                slug: string;
+                name: string;
+            } | null;
+            /** @description Логотип 160×160; null — не загружен */
+            logo_thumb_url: string | null;
+            /** @description Начало описания, до 200 знаков */
+            about: string | null;
+            /** @description Участники, включая руководителя */
+            members_count: number;
+        };
+        /** CollectiveResource */
+        CollectiveResource: {
+            id: number;
+            name: string;
+            /** @description Вид: код для фильтра и название */
+            kind: {
+                slug: string;
+                name: string;
+            };
+            city: {
+                slug: string;
+                name: string;
+            } | null;
+            about: string | null;
+            /** @description Логотип 512×512; null — не загружен */
+            logo_url: string | null;
+            logo_thumb_url: string | null;
+            /** @description Ник или канал в Telegram без @ */
+            telegram: string | null;
+            links: string[];
+            /** @description Фото коллектива; первое — обложка */
+            photos: components["schemas"]["PhotoResource"][];
+            /**
+             * @description Состав, руководитель — первым. id — ссылка на карточку, если она открыта на сайте;
+             *     аватар — тоже только у открытой карточки
+             */
+            members: {
+                id: number | null;
+                name: string;
+                specializations: string[];
+                avatar_thumb_url: string | null;
+                is_leader: boolean;
+            }[];
+            /** @description Ближайшие выступления коллектива на афише, до 10 */
+            upcoming_performances: components["schemas"]["EventListItemResource"][];
+            /** Format: date-time */
+            updated_at: string | null;
         };
         /** DaySlotsResource */
         DaySlotsResource: {
@@ -308,14 +421,21 @@ export interface components {
             ticket_url: string | null;
             poster_url: string | null;
             poster_thumb_url: string | null;
-            /** @description Состав по порядку. specialist.id — ссылка на карточку, если она открыта на сайте */
+            /**
+             * @description Состав по порядку. specialist.id и collective.id — ссылки на карточку специалиста
+             *     и страницу коллектива, если они открыты на сайте; иначе null
+             */
             participants: {
                 specialist: {
                     id: number | null;
                     name: string;
                     specializations: string[];
                 } | null;
-                collective: string | null;
+                collective: {
+                    id: number | null;
+                    name: string;
+                    kind: string;
+                } | null;
                 name: string | null;
             }[];
             /** Format: date-time */
@@ -355,6 +475,10 @@ export interface components {
                 updated_at: string;
             }[];
             specialists: {
+                id: number;
+                updated_at: string;
+            }[];
+            collectives: {
                 id: number;
                 updated_at: string;
             }[];
@@ -475,6 +599,16 @@ export interface components {
             phone: string | null;
             /** @description Только если специалист показал его */
             email: string | null;
+            /** @description Коллективы на сайте, где он участник, — ссылки на их страницы */
+            collectives: {
+                id: number;
+                name: string;
+                kind: {
+                    slug: string;
+                    name: string;
+                };
+                logo_thumb_url: string | null;
+            }[];
             /** @description Ближайшие выступления на афише, до 10 */
             upcoming_performances: components["schemas"]["EventListItemResource"][];
             /** Format: date-time */
@@ -523,6 +657,70 @@ export interface operations {
                 content: {
                     "application/json": {
                         data: components["schemas"]["CatalogResource"];
+                    };
+                };
+            };
+        };
+    };
+    "site.collectives.index": {
+        parameters: {
+            query?: {
+                /**
+                 * @description Вид коллектива из /api/site/catalog: band, team, production
+                 *     | |
+                 *     |---|
+                 *     | `band` <br/> Группа: постоянный творческий состав |
+                 *     | `team` <br/> Команда: сборная под событие — ведущий, диджей, фотограф |
+                 *     | `production` <br/> Продакшн: фото- или видеокоманда |
+                 */
+                kind?: components["schemas"]["CollectiveKind"] | null;
+                /** @description Код города из /api/site/catalog: moscow */
+                city?: string | null;
+                /** @description Подстрока названия */
+                search?: string | null;
+                page?: number;
+                /** @description По умолчанию 24 */
+                per_page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Array of `CollectiveListItemResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["CollectiveListItemResource"][];
+                    };
+                };
+            };
+            422: components["responses"]["ValidationException"];
+        };
+    };
+    "site.collectives.show": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                collective: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description `CollectiveResource` */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data: components["schemas"]["CollectiveResource"];
                     };
                 };
             };

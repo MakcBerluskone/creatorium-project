@@ -154,6 +154,40 @@ const contactClass = 'flex items-center gap-3 rounded-control px-3 py-2.5 text-f
         </section>
 
         <section
+          v-if="specialist.collectives.length"
+          aria-labelledby="collectives-title"
+          class="flex flex-col gap-4"
+        >
+          <h2
+            id="collectives-title"
+            class="font-display text-xl font-semibold"
+          >
+            Коллективы
+          </h2>
+          <ul class="grid gap-3 sm:grid-cols-2">
+            <li
+              v-for="item in specialist.collectives"
+              :key="item.id"
+            >
+              <NuxtLink
+                :to="`/collectives/${item.id}`"
+                class="group flex h-full items-center gap-3 rounded-card border border-line bg-panel p-3 transition-colors hover:border-line-strong"
+              >
+                <OrganizerLogo
+                  :name="item.name"
+                  :src="item.logo_thumb_url"
+                  class="size-12 [--logo-size:3rem]"
+                />
+                <span class="flex min-w-0 flex-col">
+                  <span class="truncate font-semibold text-fg group-hover:text-primary-text">{{ item.name }}</span>
+                  <span class="text-sm text-fg-muted">{{ item.kind.name }}</span>
+                </span>
+              </NuxtLink>
+            </li>
+          </ul>
+        </section>
+
+        <section
           v-if="performances.length"
           aria-labelledby="performances-title"
           class="flex flex-col gap-4"

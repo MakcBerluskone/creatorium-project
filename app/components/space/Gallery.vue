@@ -2,11 +2,18 @@
 import type { Photo } from '#shared/types/site'
 import { Images } from '@lucide/vue'
 
-const props = defineProps<{
+// Та же галерея — у коллектива: он передаёт свою подпись ленты, а без фото галерею не показывает.
+const props = withDefaults(defineProps<{
   photos: Photo[]
   name: string
-  type: string
-}>()
+  /** Код вида площадки — для заглушки без фото. */
+  type?: string
+  /** Подпись ленты фото для экранных читалок. */
+  label?: string
+}>(), {
+  type: undefined,
+  label: 'Фото площадки'
+})
 
 const opened = ref<number | null>(null)
 const shown = computed(() => props.photos.slice(0, 5))
@@ -43,7 +50,7 @@ function cellClass(index: number): string {
       <!-- Телефон: лента с прокруткой пальцем. -->
       <ul
         class="scrollbar-none -mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 sm:-mx-6 sm:px-6 md:hidden"
-        aria-label="Фото площадки"
+        :aria-label="label"
       >
         <li
           v-for="(photo, index) in photos"

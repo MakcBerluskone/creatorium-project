@@ -65,7 +65,7 @@ const ticketUrl = computed(() => (event.value?.ticket_url && !past.value ? safeE
 interface Performer {
   key: string
   name: string
-  /** Карточка специалиста открыта на сайте. */
+  /** Карточка специалиста или страница коллектива открыта на сайте. */
   to?: string
   note?: string
   /** Для schema.org: человек или группа. */
@@ -83,7 +83,14 @@ function performer(item: EventParticipant, index: number): Performer | null {
     }
   }
   if (item.collective) {
-    return { key: `c${index}`, name: item.collective, note: 'Коллектив', group: true }
+    return {
+      key: `c${index}`,
+      name: item.collective.name,
+      to: item.collective.id ? `/collectives/${item.collective.id}` : undefined,
+      // Вид приходит подписью: «Группа», «Команда», «Продакшн».
+      note: item.collective.kind || 'Коллектив',
+      group: true
+    }
   }
   if (item.name) {
     return { key: `n${index}`, name: item.name, group: true }

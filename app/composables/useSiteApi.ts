@@ -1,5 +1,8 @@
 import type {
   Catalog,
+  Collective,
+  CollectiveListItem,
+  CollectivesQuery,
   DaySlots,
   EventDetails,
   EventListItem,
@@ -55,6 +58,11 @@ export function useSiteApi() {
       request<Paginated<SpecialistListItem>>('/specialists', { query: compactQuery(query), signal }),
 
     specialist: (id: number) => request<Wrapped<Specialist>>(`/specialists/${id}`).then(r => r.data),
+
+    collectives: (query: CollectivesQuery = {}, signal?: AbortSignal) =>
+      request<Paginated<CollectiveListItem>>('/collectives', { query: compactQuery(query), signal }),
+
+    collective: (id: number) => request<Wrapped<Collective>>(`/collectives/${id}`).then(r => r.data),
 
     events: (query: EventsQuery = {}, signal?: AbortSignal) =>
       request<Paginated<EventListItem>>('/events', { query: compactQuery(query), signal }),

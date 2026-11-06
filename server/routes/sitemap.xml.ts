@@ -1,6 +1,6 @@
 import type { Sitemap, Wrapped } from '#shared/types/site'
 
-const STATIC_PAGES = ['/', '/spaces', '/specialists', '/events', '/for-spaces', '/for-specialists']
+const STATIC_PAGES = ['/', '/spaces', '/specialists', '/collectives', '/events', '/for-spaces', '/for-specialists']
 
 function escapeXml(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -23,6 +23,7 @@ export default defineEventHandler(async (event) => {
     ...STATIC_PAGES.map(path => entry(`${site}${path}`)),
     ...data.spaces.map(space => entry(`${site}/spaces/${space.id}`, space.updated_at)),
     ...data.specialists.map(specialist => entry(`${site}/specialists/${specialist.id}`, specialist.updated_at)),
+    ...data.collectives.map(collective => entry(`${site}/collectives/${collective.id}`, collective.updated_at)),
     ...data.events.map(item => entry(`${site}/events/${item.id}`, item.updated_at)),
     ...data.organizers.map(organizer => entry(`${site}/organizers/${organizer.id}`, organizer.updated_at))
   ]

@@ -6,6 +6,7 @@ export type Catalog = Schemas['CatalogResource']
 export type City = Catalog['cities'][number]
 export type SpaceType = Catalog['space_types'][number]
 export type Specialization = Catalog['specializations'][number]
+export type CollectiveKindItem = Catalog['collective_kinds'][number]
 export type EventType = Catalog['event_types'][number]
 
 export type Photo = Schemas['PhotoResource']
@@ -19,6 +20,12 @@ export type Slot = DaySlots['slots'][number]
 export type SpecialistListItem = Schemas['SpecialistListItemResource']
 export type Specialist = Schemas['SpecialistResource']
 
+/** Вид коллектива: band, team, production. Список задан в API кодом, а не справочником. */
+export type CollectiveKind = Schemas['CollectiveKind']
+export type CollectiveListItem = Schemas['CollectiveListItemResource']
+export type Collective = Schemas['CollectiveResource']
+export type CollectiveMember = Collective['members'][number]
+
 // Не Event: это имя занято событиями DOM.
 export type EventListItem = Schemas['EventListItemResource']
 export type EventDetails = Schemas['EventResource']
@@ -29,6 +36,7 @@ export type Sitemap = Schemas['SitemapResource']
 
 export type SpacesQuery = NonNullable<paths['/spaces']['get']['parameters']['query']>
 export type SpecialistsQuery = NonNullable<paths['/specialists']['get']['parameters']['query']>
+export type CollectivesQuery = NonNullable<paths['/collectives']['get']['parameters']['query']>
 export type EventsQuery = NonNullable<paths['/events']['get']['parameters']['query']>
 
 /** Обёртка ресурса Laravel: ответ лежит в data. */
