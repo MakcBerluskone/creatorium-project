@@ -19,6 +19,16 @@ export function formatPricePerHour(amount: number | null): string {
   return amount === null ? 'по запросу' : `${formatRubles(amount)}/час`
 }
 
+/** Цена доп. оборудования: «200 ₽ за бронь», «100 ₽ за час»; 0 — бесплатно. */
+export function formatEquipmentPrice(price: number, unit: { name: string }): string {
+  return price === 0 ? 'бесплатно' : `${formatRubles(price)} ${unit.name}`
+}
+
+/** 2 → «2 шт.». */
+export function formatPieces(count: number): string {
+  return `${count}${NBSP}шт.`
+}
+
 /** 90 → «1 ч 30 мин». */
 export function formatDuration(minutes: number): string {
   const hours = Math.floor(minutes / 60)

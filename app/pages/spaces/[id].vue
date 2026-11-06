@@ -149,6 +149,25 @@ usePageSeo({
           </section>
 
           <section
+            v-if="space.equipment.length"
+            aria-labelledby="equipment-title"
+            class="flex flex-col gap-4"
+          >
+            <div class="flex flex-col gap-1">
+              <h2
+                id="equipment-title"
+                class="font-display text-xl font-semibold"
+              >
+                Доп. оборудование
+              </h2>
+              <p class="text-fg-muted">
+                Выбрать можно при брони любого зала, оплата — на месте.
+              </p>
+            </div>
+            <SpaceEquipment :items="space.equipment" />
+          </section>
+
+          <section
             v-if="space.rooms.length"
             id="free-time"
             aria-labelledby="free-time-title"

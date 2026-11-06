@@ -550,6 +550,20 @@ export interface components {
                 min_booking_minutes: number;
                 photos: components["schemas"]["PhotoResource"][];
             }[];
+            /** @description Доп. оборудование по порядку: берут к брони любого зала, платят на месте */
+            equipment: {
+                name: string;
+                description: string | null;
+                /** @description Сколько единиц у площадки */
+                quantity: number;
+                /** @description Цена, рубли; 0 — бесплатно */
+                price: number;
+                /** @description За что цена: hour — за час брони, booking — за бронь целиком */
+                price_unit: {
+                    slug: string;
+                    name: string;
+                };
+            }[];
             /** @description Часы работы по дням недели; дня нет — закрыто */
             hours: components["schemas"]["SpaceHourResource"][];
             /** @description Ближайшие события здесь на афише, до 10 */
